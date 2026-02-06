@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Iron Insanity — History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/styles/app.css">
+
+<style>
+
+/* CONTENT WRAPPER — gleich wie settings */
+.content{
+  padding:25px;
+  display:flex;
+  flex-direction:column;
+  margin-top:20px;
+}
+
+/* CARD — gleich wie settings */
+.card{
+  background:#111827;
+  border:2px solid #374151;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  margin-bottom:16px;
+  position:relative;
+}
+
+/* HISTORY ENTRY */
+.entry-title{
+  font-weight:800;
+  font-size:1.05rem;
+}
+
+.small{
+  opacity:.7;
+  font-size:14px;
+  margin-top:4px;
+}
+
+/* DEMO STATE */
+.card.demo{
+  opacity:.75;
+  border-style:dashed;
+}
+
+.demo-badge{
+  position:absolute;
+  top:14px;
+  right:14px;
+  font-size:11px;
+  background:#374151;
+  padding:4px 8px;
+  border-radius:999px;
+}
+
+/* HINT TEXT */
+.hint{
+  opacity:.6;
+  font-size:14px;
+  text-align:center;
+  margin-top:8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="content">
+
+  <div id="historyList"></div>
+
+  <div id="hint" class="hint"></div>
+
+</div>
+
+<script>
+
+/* =========================
+   HELPERS
+========================= */
+function formatDate(d){
+  const dt = new Date(d);
+  return dt.toLocaleDateString()+" "+
+         dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+function renderCard(entry, demo=false){
+  const card = document.createElement("div");
+  card.className = "card" + (demo ? " demo" : "");
+
+  if(demo){
+    const badge = document.createElement("div");
+    badge.className = "demo-badge";
+    badge.innerText = "Beispiel";
+    card.appendChild(badge);
+  }
+
+  const t = document.createElement("div");
+  t.className = "entry-title";
+  t.innerText = `Woche ${entry.week} — ${entry.day}`;
+
+  const d = document.createElement("div");
+  d.className="small";
+  d.innerText = formatDate(entry.date);
+
+  const e = document.createElement("div");
+  e.className="small";
+  e.innerText = entry.exercises + " Übungen";
+
+  card.appendChild(t);
+  card.appendChild(d);
+  card.appendChild(e);
+
+  return card;
+}
+
+/* =========================
+   LOAD HISTORY
+========================= */
+function loadHistory(){
+
+  const list = document.getElementById("historyList");
+  const hint = document.getElementById("hint");
+
+  list.innerHTML = "";
+  hint.innerText = "";
+
+  const data = JSON.parse(localStorage.getItem("workoutHistory") || "[]");
+
+  /* EMPTY → PLACEHOLDER */
+  if(data.length === 0){
+
+    const demoEntry = {
+      week: 1,
+      day: "Push",
+      date: Date.now() - 86400000,
+      exercises: 6
+    };
+
+    list.appendChild(renderCard(demoEntry, true));
+
+    hint.innerText =
+      "Deine abgeschlossenen Trainings erscheinen hier automatisch.";
+
+    return;
+  }
+
+  /* REAL DATA */
+  data.slice().reverse().forEach(entry=>{
+    list.appendChild(renderCard(entry));
+  });
+}
+
+loadHistory();
+
+</script>
+
+<script src="/components/layout.js"></script>
+<script>
+loadLayout("/pages/history.html","/index.html");
+</script>
+
+</body>
+</html>

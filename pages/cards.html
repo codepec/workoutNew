@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Iron Insanity — Workout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00FF66">
+
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<link rel="stylesheet" href="/styles/app.css">
+
+<style>
+
+/* CARD AREA */
+#cardContainer{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+#weekDay{
+  margin-top:14px;
+  opacity:.75;
+  text-align:center;
+}
+
+/* EXERCISE TITLE */
+.exercise{
+  font-size:1.4rem;
+  font-weight:900;
+  margin-bottom:10px;
+  text-align:center;
+}
+
+/* MUSCLE ICON HEARTBEAT */
+.muscle-icon{
+  width:140px;
+  margin:14px auto;
+  display:block;
+  animation: heartbeat 1.8s ease-in-out infinite;
+}
+
+@keyframes heartbeat{
+  0%{transform:scale(1)}
+  14%{transform:scale(1.1)}
+  28%{transform:scale(1)}
+  42%{transform:scale(1.1)}
+  70%{transform:scale(1)}
+}
+
+/* SET PROGRESS */
+.set-box{
+  margin-top:6px;
+  font-weight:700;
+  text-align:center;
+}
+
+.set-progress{
+  width:100%;
+  height:10px;
+  background:#1f2937;
+  border-radius:8px;
+  margin-top:6px;
+  overflow:hidden;
+}
+
+.set-progress-fill{
+  height:100%;
+  background:#22c55e;
+  transition:width .3s ease;
+}
+
+/* INFO GRID */
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+
+.badge{
+  background:#020617;
+  border:1px solid #1f2937;
+  border-radius:14px;
+  padding:10px 6px;
+  text-align:center;
+}
+
+.badge-label{
+  font-size:.7rem;
+  opacity:.6;
+}
+
+.badge-value{
+  font-size:1.05rem;
+  font-weight:800;
+}
+
+/* ===== BUTTON BEAT (ruhig) ===== */
+
+.beat-btn{
+  margin-top:18px;
+  width:100%;
+  animation: buttonbeat 2.8s ease-in-out infinite;
+}
+
+
+
+
+/* PAUSE */
+#pauseContainer{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  margin-top:30px;
+}
+
+#pauseCircle{
+  width:140px;
+  height:140px;
+  margin-top:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+<div id="cardContainer"></div>
+
+<div id="pauseContainer">
+  <h2>Pause</h2>
+  <canvas id="pauseCircle" width="140" height="140"></canvas>
+  <button class="secondary" id="skipPauseBtn">Pause überspringen</button>
+</div>
+
+<div id="weekDay"></div>
+
+</div>
+
+<script src="/components/layout.js"></script>
+<script>
+loadLayout("/pages/cards.html","/pages/preview.html");
+</script>
+
+<script>
+/* =========================
+   WORKOUT LOGIC
+========================= */
+const PROGRESS_KEY="workoutProgress";
+
+const ICONS={
+  Chest:"chest.svg",
+  Back:"back.svg",
+  Legs:"legs.svg",
+  Shoulders:"shoulders.svg",
+  Biceps:"biceps.svg",
+  Triceps:"triceps.svg"
+};
+
+const week = Number(localStorage.getItem("selectedWeek"));
+const day = localStorage.getItem("selectedDay");
+
+let exercises=[], exIndex=0, setIndex=0, pauseInterval=null;
+
+document.getElementById("weekDay").innerText =
+`Woche ${week} — ${day}`;
+
+loadData();
+
+async function loadData(){
+  const res = await fetch("../data/data.json");
+  const data = await res.json();
+  exercises=data.weeks.find(w=>w.week===week)[day];
+  restoreProgress();
+  showCard();
+}
+
+function showCard(){
+
+  hidePause();
+  const root=document.getElementById("cardContainer");
+  root.innerHTML="";
+
+  if(exIndex>=exercises.length){
+    root.innerHTML=`
+      <div class="card">
+        <h2>🔥 Workout fertig!</h2>
+        <button class="primary beat-btn" onclick="finish()">Beenden</button>
+      </div>`;
+    localStorage.removeItem(PROGRESS_KEY);
+    return;
+  }
+
+  const ex=exercises[exIndex];
+  const sets=Number(ex.sets)||1;
+  const pause=Number(ex.pause)||0;
+
+  const card=document.createElement("div");
+  card.className="card";
+
+  card.innerHTML=`<div class="exercise">${ex.exercise}</div>`;
+
+  const img=document.createElement("img");
+  img.src="../icons/"+(ICONS[ex.muscle]||"default.svg");
+  img.className="muscle-icon";
+  card.appendChild(img);
+
+  card.innerHTML+=`<div class="set-box">
+    Satz ${setIndex+1} / ${sets}
+  </div>`;
+
+  const prog=document.createElement("div");
+  prog.className="set-progress";
+  prog.innerHTML=`<div class="set-progress-fill"
+     style="width:${(setIndex/sets)*100}%"></div>`;
+  card.appendChild(prog);
+
+  const grid=document.createElement("div");
+  grid.className="info-grid";
+  grid.innerHTML=`
+    <div class="badge"><div class="badge-label">Wdh</div><div class="badge-value">${ex.repetitions}</div></div>
+    <div class="badge"><div class="badge-label">Gewicht</div><div class="badge-value">${ex.weight} kg</div></div>
+    <div class="badge"><div class="badge-label">Pause</div><div class="badge-value">${pause}s</div></div>
+  `;
+  card.appendChild(grid);
+
+  const btn=document.createElement("button");
+  btn.className="primary beat-btn";
+  btn.innerText="Satz erledigt";
+  btn.onclick=()=>completeSet(sets,pause);
+
+  card.appendChild(btn);
+  root.appendChild(card);
+}
+
+function completeSet(sets,pause){
+  setIndex++; saveProgress();
+  if(setIndex>=sets){
+    exIndex++; setIndex=0; saveProgress(); showCard();
+  } else {
+    pause>0 ? startPause(pause) : showCard();
+  }
+}
+
+function startPause(seconds){
+  cardContainer.style.display="none";
+  pauseContainer.style.display="flex";
+
+  let r=seconds;
+  const ctx=pauseCircle.getContext("2d");
+
+  pauseInterval=setInterval(()=>{
+    drawPause(ctx,r,seconds);
+    if(--r<0){
+      clearInterval(pauseInterval);
+      showCard();
+    }
+  },1000);
+
+  skipPauseBtn.onclick=()=>{
+    clearInterval(pauseInterval);
+    showCard();
+  };
+}
+
+function drawPause(ctx,r,t){
+  const c=70,rad=60,p=(t-r)/t;
+  ctx.clearRect(0,0,140,140);
+  ctx.beginPath();
+  ctx.arc(c,c,rad,0,2*Math.PI);
+  ctx.strokeStyle="#1f2937";
+  ctx.lineWidth=10;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(c,c,rad,-Math.PI/2,-Math.PI/2+2*Math.PI*p);
+  ctx.strokeStyle="#22c55e";
+  ctx.lineWidth=10;
+  ctx.stroke();
+
+  ctx.fillStyle="white";
+  ctx.font="36px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText(Math.max(r,0),c,c);
+}
+
+function saveProgress(){
+  localStorage.setItem(PROGRESS_KEY,
+    JSON.stringify({week,day,exIndex,setIndex}));
+}
+
+function restoreProgress(){
+  const p=JSON.parse(localStorage.getItem(PROGRESS_KEY)||"{}");
+  if(p.week===week && p.day===day){
+    exIndex=p.exIndex||0;
+    setIndex=p.setIndex||0;
+  }
+}
+
+function hidePause(){
+  pauseContainer.style.display="none";
+  cardContainer.style.display="block";
+}
+
+function finish(){
+  localStorage.removeItem(PROGRESS_KEY);
+  location.href="/index.html";
+}
+
+function goToPreview(){ window.location.href = "/pages/preview.html"; }
+
+</script>
+
+</body>
+</html>

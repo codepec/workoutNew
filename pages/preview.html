@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Iron Insanity — Trainingsübersicht</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/styles/app.css">
+
+<style>
+/* =========================
+   BASE
+========================= */
+
+
+
+/* HEADER */
+header{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  padding:12px 16px;
+  box-sizing:border-box;
+  background:#111827;
+  border-bottom:1px solid #1f2937;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+header h1{
+  margin:0 auto;
+  font-size:1.5rem;
+  text-align:center;
+  flex:1;
+}
+
+.back-btn{
+  background:none;
+  color:white;
+  border:none;
+  cursor:pointer;
+  font-size:1rem;
+}
+
+/* CONTENT */
+.content{
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  margin-top:20px;
+  
+}
+
+/* EXERCISE CARD */
+.exercise{
+  background:#111827;
+  border-radius:18px;
+  padding:18px;
+  margin-top:14px;
+  border:2px solid #374151;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+}
+
+.exercise h3{
+  margin:0 0 10px;
+  font-size:1.1rem;
+}
+
+/* INFO GRID */
+.row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.badge{
+  background:#020617;
+  border:1px solid #1f2937;
+  border-radius:12px;
+  padding:8px 6px;
+  text-align:center;
+}
+
+.badge-label{
+  font-size:.65rem;
+  opacity:.6;
+}
+
+.badge-value{
+  font-size:.95rem;
+  font-weight:700;
+}
+
+/* BUTTON */
+.back-btn-main{
+  background:#374151;
+  color:white;
+  font-weight:700;
+  font-size:1rem;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  width:100%;
+  margin-top:20px;
+  cursor:pointer;
+  text-align:center;
+  transition: transform 0.2s;
+}
+
+.back-btn-main:hover{
+  transform:translateY(-2px);
+}
+
+
+.sub{
+  text-align:center;
+  font-size:1.4rem;
+  font-weight:700;
+  margin-bottom:16px;
+  color:#22c55e;
+  text-shadow:0 0 10px rgba(34,197,94,0.6);
+}
+
+
+
+</style>
+</head>
+
+<body>
+
+
+<div class="content">
+  <div id="weekLabel" class="sub"></div>
+  <div id="exerciseList"></div>
+  <button class="back-btn-main" onclick="goBack()">Zurück zum Dashboard</button>
+</div>
+
+<script>
+/* =========================
+   STORAGE + VALIDATION
+========================= */
+const week = parseInt(localStorage.getItem("selectedWeek")) || 1;
+const day = localStorage.getItem("selectedDay") || "Push";
+
+document.getElementById("weekLabel").innerText = `Woche ${week} — ${day}`;
+
+/* =========================
+   LOAD DATA
+========================= */
+async function loadExercises(){
+  let data;
+  try{
+    const res = await fetch("../data/data.json");
+    data = await res.json();
+  }catch(e){
+    document.getElementById("exerciseList").innerText = "❌ Daten konnten nicht geladen werden";
+    return;
+  }
+
+  const exercises = data.weeks.find(w=>w.week===week)[day];
+  renderExercises(exercises);
+}
+
+/* =========================
+   RENDER EXERCISES
+========================= */
+function renderExercises(list){
+  const container = document.getElementById("exerciseList");
+  container.innerHTML = "";
+
+  list.forEach(ex=>{
+    const box = document.createElement("div");
+    box.className = "exercise";
+
+    const title = document.createElement("h3");
+    title.innerText = ex.exercise;
+
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `
+      <div class="badge"><div class="badge-label">Sätze</div><div class="badge-value">${ex.sets}</div></div>
+      <div class="badge"><div class="badge-label">Wdh</div><div class="badge-value">${ex.repetitions}</div></div>
+      <div class="badge"><div class="badge-label">Gewicht</div><div class="badge-value">${ex.weight}kg</div></div>
+      <div class="badge"><div class="badge-label">Pause</div><div class="badge-value">${ex.pause}s</div></div>
+    `;
+
+    box.appendChild(title);
+    box.appendChild(row);
+    container.appendChild(box);
+  });
+}
+
+/* =========================
+   BACK BUTTON
+========================= */
+function goBack(){
+  window.location.href = "/index.html";
+}
+
+/* =========================
+   START
+========================= */
+loadExercises();
+</script>
+
+<script src="/components/layout.js"></script>
+<script>
+loadLayout("/pages/preview.html", "/index.html");
+</script>
+
+</body>
+</html>
