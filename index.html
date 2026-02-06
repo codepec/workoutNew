@@ -164,15 +164,15 @@ document.getElementById("nextWorkoutLabel").innerHTML = `Heute dran:<br><br><str
 document.getElementById("startWorkoutBtn").addEventListener("click", ()=>{
   localStorage.setItem("selectedDay", nextWorkout);
   localStorage.setItem("lastDay", nextWorkout);
-  window.location.href = "/pages/cards.html";
+  window.location.href = "./pages/cards.html";
 });
 
 /* =========================
    NAVIGATION
 ========================= */
-function goToPreview(){ window.location.href = "/pages/preview.html"; }
-function goToHistory(){ window.location.href = "/pages/history.html"; }
-function changeWeek(){ window.location.href = "/pages/week.html"; }
+function goToPreview(){ window.location.href = "./pages/preview.html"; }
+function goToHistory(){ window.location.href = "./pages/history.html"; }
+function changeWeek(){ window.location.href = "./pages/week.html"; }
 </script>
 
 </body>
