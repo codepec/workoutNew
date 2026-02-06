@@ -5,13 +5,13 @@
 <title>Iron Insanity — Workout</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="../manifest.json">
 <meta name="theme-color" content="#00FF66">
 
-<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../icons/icon-192x192.png">
+<link rel="icon" href="../favicon.ico" type="image/png">
 
-<link rel="stylesheet" href="/styles/app.css">
+<link rel="stylesheet" href="../styles/app.css">
 
 <style>
 
@@ -145,9 +145,9 @@
 
 </div>
 
-<script src="/components/layout.js"></script>
+<script src="../components/layout.js"></script>
 <script>
-loadLayout("/pages/cards.html","/pages/preview.html");
+loadLayout("../pages/cards.html","../pages/preview.html");
 </script>
 
 <script>
@@ -313,10 +313,10 @@ function hidePause(){
 
 function finish(){
   localStorage.removeItem(PROGRESS_KEY);
-  location.href="/index.html";
+  location.href="../index.html";
 }
 
-function goToPreview(){ window.location.href = "/pages/preview.html"; }
+function goToPreview(){ window.location.href = "../pages/preview.html"; }
 
 </script>
 

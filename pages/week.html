@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Iron Insanity — Woche wählen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/styles/app.css">
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',system-ui,Arial,sans-serif;
+  background:linear-gradient(135deg,#020617,#0f172a);
+  color:white;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  align-items:center;
+  padding:20px;
+}
+
+/* HEADER */
+header{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px;
+  box-sizing:border-box;
+  background:#111827;
+  border-bottom:1px solid #1f2937;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+header h1{
+  margin:0;
+  font-size:1.5rem;
+  text-align:center;
+  flex:1;
+}
+
+/* GRID */
+.week-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:18px;
+  max-width:500px;
+  margin-top:50px;
+  width:100%;
+}
+
+/* WEEK BUTTON */
+.week-btn{
+  background:#111827;
+  border:2px solid #374151;
+  border-radius:18px;
+  padding:20px;
+  font-size:1.1rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.25s;
+  color:white;
+  text-align:center;
+}
+
+.week-btn.active{
+  background:#22c55e;
+  color:black;
+  border-color:#22c55e;
+}
+
+.week-btn:hover{
+  transform:translateY(-3px) scale(1.03);
+}
+
+/* BACK */
+.back-btn{
+  margin-top:40px;
+  padding:14px 20px;
+  background:#374151;
+  color:white;
+  border:none;
+  border-radius:16px;
+  cursor:pointer;
+  font-weight:700;
+}
+.back-btn:hover{
+  background:#4b5563;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Woche wählen</h1>
+</header>
+
+<div class="week-grid" id="weekGrid"></div>
+
+<button class="back-btn" onclick="goBack()">← zurück</button>
+
+<script>
+/* =========================
+   CREATE WEEK BUTTONS
+========================= */
+const weekGrid = document.getElementById("weekGrid");
+let selectedWeek = parseInt(localStorage.getItem("selectedWeek")) || 1;
+
+for(let i=1;i<=8;i++){
+  const btn = document.createElement("button");
+  btn.className = "week-btn";
+  btn.innerText = "Woche " + i;
+  if(i===selectedWeek) btn.classList.add("active");
+
+  btn.addEventListener("click", ()=>{
+    selectedWeek = i;
+    localStorage.setItem("selectedWeek", selectedWeek);
+    // Alle Buttons aktualisieren
+    document.querySelectorAll(".week-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    // Zurück zum Dashboard
+    window.location.href = "/index.html";
+  });
+
+  weekGrid.appendChild(btn);
+};
+
+/* =========================
+   BACK
+========================= */
+function goBack(){
+  window.location.href = "/index.html";
+}
+</script>
+
+</body>
+</html>
