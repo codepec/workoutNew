@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <title>Iron Insanity — Trainingsübersicht</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="/styles/app.css">
+
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#00FF66">
+
+<link rel="apple-touch-icon" href="../icons/icon-192x192.png">
+<link rel="icon" href="../favicon.ico" type="image/png">
+
+<link rel="stylesheet" href="../styles/app.css">
 
 <style>
 /* =========================
@@ -195,7 +202,7 @@ function renderExercises(list){
    BACK BUTTON
 ========================= */
 function goBack(){
-  window.location.href = "/index.html";
+  window.location.href = "../index.html";
 }
 
 /* =========================
@@ -204,9 +211,9 @@ function goBack(){
 loadExercises();
 </script>
 
-<script src="/components/layout.js"></script>
+<script src="../components/layout.js"></script>
 <script>
-loadLayout("/pages/preview.html", "/index.html");
+loadLayout("../pages/preview.html", "../index.html");
 </script>
 
 </body>
