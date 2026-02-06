@@ -4,9 +4,8 @@
 <meta charset="utf-8">
 <title>Iron Insanity — Woche wählen</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="/styles/app.css">
-
 <style>
+/* ========================= GLOBAL ========================= */
 body{
   margin:0;
   font-family:'Segoe UI',system-ui,Arial,sans-serif;
@@ -16,7 +15,7 @@ body{
   flex-direction:column;
   min-height:100vh;
   align-items:center;
-  padding:20px;
+  padding:0;
 }
 
 /* HEADER */
@@ -48,7 +47,8 @@ header h1{
   gap:18px;
   max-width:500px;
   margin-top:50px;
-  width:100%;
+  width:90%;
+  padding:0 10px;
 }
 
 /* WEEK BUTTON */
@@ -77,7 +77,7 @@ header h1{
 
 /* BACK */
 .back-btn{
-  margin-top:40px;
+  margin:30px 0;
   padding:14px 20px;
   background:#374151;
   color:white;
@@ -89,23 +89,69 @@ header h1{
 .back-btn:hover{
   background:#4b5563;
 }
+
+/* TABS */
+.tabs{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-top:40px;
+  flex-wrap:wrap;
+}
+.tab{
+  padding:10px 18px;
+  border-radius:12px;
+  background:#111827;
+  border:1px solid #374151;
+  cursor:pointer;
+  font-weight:700;
+  transition:0.25s;
+}
+.tab:hover{
+  background:#22c55e;
+  color:black;
+  border-color:#22c55e;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>Woche wählen</h1>
+  <!-- BACK BUTTON -->
+  <button onclick="goBack()" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; padding:0;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </button>
+
+  <!-- TITLE -->
+  <h1>Iron Insanity</h1>
+
+  <!-- HOME BUTTON -->
+  <button onclick="goHome()" style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; padding:0;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11L12 4l9 7"></path>
+      <path d="M5 10v10h14V10"></path>
+    </svg>
+  </button>
 </header>
+
+<h2 style="margin-top:30px;">Woche wählen</h2>
 
 <div class="week-grid" id="weekGrid"></div>
 
 <button class="back-btn" onclick="goBack()">← zurück</button>
 
+<div class="tabs">
+  <div class="tab" data-link="cards.html">Workout</div>
+  <div class="tab" data-link="preview.html">Übersicht</div>
+  <div class="tab" data-link="history.html">History</div>
+  <div class="tab" data-link="settings.html">Settings</div>
+</div>
+
 <script>
-/* =========================
-   CREATE WEEK BUTTONS
-========================= */
+/* ========================= WEEK BUTTONS ========================= */
 const weekGrid = document.getElementById("weekGrid");
 let selectedWeek = parseInt(localStorage.getItem("selectedWeek")) || 1;
 
@@ -118,22 +164,31 @@ for(let i=1;i<=8;i++){
   btn.addEventListener("click", ()=>{
     selectedWeek = i;
     localStorage.setItem("selectedWeek", selectedWeek);
-    // Alle Buttons aktualisieren
+    // alle Buttons aktualisieren
     document.querySelectorAll(".week-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    // Zurück zum Dashboard
-    window.location.href = "/index.html";
+    // zurück zum Dashboard
+    window.location.href = "index.html";
   });
 
   weekGrid.appendChild(btn);
-};
-
-/* =========================
-   BACK
-========================= */
-function goBack(){
-  window.location.href = "/index.html";
 }
+
+/* ========================= NAVIGATION ========================= */
+function goBack(){
+  window.location.href = "index.html";
+}
+function goHome(){
+  window.location.href = "index.html";
+}
+
+/* ========================= TABS ========================= */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    const link = tab.getAttribute("data-link");
+    if(link) window.location.href = link;
+  });
+});
 </script>
 
 </body>
