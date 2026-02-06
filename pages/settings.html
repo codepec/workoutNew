@@ -198,14 +198,36 @@ vibrationToggle.onchange = () => {
    ACTIONS
 ========================= */
 function resetWorkoutProgress(){
-  localStorage.removeItem("workoutProgress");
-  alert("Workout-Fortschritt gelöscht");
+
+  const w = localStorage.getItem("selectedWeek") || "1";
+  const d = localStorage.getItem("selectedDay") || "Push";
+
+  localStorage.setItem("workoutProgress", JSON.stringify({
+    week: Number(w),
+    day: d,
+    exIndex: 0,
+    setIndex: 0
+  }));
+
+  alert("Aktuelles Workout neu gestartet");
 }
 
 function resetWeek(){
-  localStorage.removeItem("selectedWeek");
-  localStorage.removeItem("lastDay");
-  alert("Woche zurückgesetzt");
+
+  // Woche & Trainingstag auf Start
+  localStorage.setItem("selectedWeek", "1");
+  localStorage.setItem("selectedDay", "Push");
+  localStorage.setItem("lastDay", "Push");
+
+  // laufendes Workout zurücksetzen
+  localStorage.setItem("workoutProgress", JSON.stringify({
+    week: 1,
+    day: "Push",
+    exIndex: 0,
+    setIndex: 0
+  }));
+
+  alert("Plan auf Woche 1 / Push zurückgesetzt");
 }
 
 function resetStreak(){
