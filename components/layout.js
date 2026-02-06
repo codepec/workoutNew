@@ -1,7 +1,7 @@
 async function loadLayout(activePath, backLink=null){
 
   /* HEADER */
-  const h = await fetch("/components/header.html");
+  const h = await fetch("../components/header.html");
   document.body.insertAdjacentHTML("afterbegin", await h.text());
 
   if(backLink){
@@ -11,7 +11,7 @@ async function loadLayout(activePath, backLink=null){
   }
 
   /* TABS */
-  const t = await fetch("/components/tabs.html");
+  const t = await fetch("../components/tabs.html");
   document.body.insertAdjacentHTML("beforeend", await t.text());
 
   document.querySelectorAll(".tab").forEach(tab=>{
@@ -23,7 +23,7 @@ async function loadLayout(activePath, backLink=null){
 
 
   /* FOOTER */
-  const f = await fetch("/components/footer.html");
+  const f = await fetch("../components/footer.html");
   document.body.insertAdjacentHTML("beforeend", await f.text());
   console.log("Layout loaded");
 
@@ -32,5 +32,5 @@ async function loadLayout(activePath, backLink=null){
 
 
 function goHome(){
-  window.location.href = "/index.html";
+  window.location.href = "../index.html";
 }
