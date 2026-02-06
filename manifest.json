@@ -1,8 +1,14 @@
 {
-  "name": "Iron Insanity",
-  "short_name": "Iron Insanity",
-  "icons": [
-    {
+    "name": "Iron Insanity",
+    "short_name": "Iron Insanity",
+    "theme_color": "#00FF66",
+    "background_color": "#121212",
+    "display": "fullScreen",
+    "orientation": "portrait",
+    "scope": "/",
+    "start_url": "https://codepec.github.io/workoutNew/",
+    "icons": [
+      {
       "src": "icons/icon-48x48.png",
       "sizes": "48x48",
       "type": "image/png"
@@ -52,9 +58,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#121212",
-  "theme_color": "#00FF66"
+  ]
 }
