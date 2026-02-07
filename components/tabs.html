@@ -1,6 +1,68 @@
 <div class="tabs">
-  <div class="tab" data-link="../pages/cards.html">Workout</div>
-  <div class="tab" data-link="../pages/preview.html">Übersicht</div>
-  <div class="tab" data-link="../pages/history.html">History</div>
-  <div class="tab" data-link="../pages/settings.html">Settings</div>
+  <div class="tab" data-link="../pages/cards.html">
+    <img src="../icons/dumbbell.svg" alt="Workout Icon" class="tab-icon"> Workout
+  </div>
+  <div class="tab" data-link="../pages/preview.html">
+    <img src="../icons/overview.svg" alt="Übersicht Icon" class="tab-icon"> Übersicht
+  </div>
+  <div class="tab" data-link="../pages/history.html">
+    <img src="../icons/history.svg" alt="History Icon" class="tab-icon"> History
+  </div>
+  <div class="tab" data-link="../pages/settings.html">
+    <img src="../icons/settings.svg" alt="Settings Icon" class="tab-icon"> Settings
+  </div>
 </div>
+
+<style>
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  background: #111827;
+  padding: 8px 0;
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #cbd5e1;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 8px;
+  transition: color 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.tab:hover {
+  color: #22c55e;
+}
+
+.tab.active {
+  color: #22c55e;
+}
+
+.tab-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 4px;
+  filter: brightness(0.8);
+}
+
+.tab.active .tab-icon,
+.tab:hover .tab-icon {
+  filter: brightness(1) drop-shadow(0 0 2px #22c55e);
+}
+</style>
+
+<script>
+// Set active tab based on current page
+document.querySelectorAll('.tab').forEach(tab => {
+  if(window.location.pathname.endsWith(tab.dataset.link.split('/').pop())){
+    tab.classList.add('active');
+  }
+
+  tab.addEventListener('click', () => {
+    window.location.href = tab.dataset.link;
+  });
+});
+</script>

@@ -13,11 +13,6 @@
 <link rel="stylesheet" href="../styles/app.css">
 
 <style>
-
-
-
-
-
 h1{
   margin:0;
   font-size:1.4rem;
@@ -29,16 +24,18 @@ h1{
   display: flex;
   flex-direction: column;
   margin-top:20px;
-  
+  width: 80%;
 }
 
 /* CARD */
 .card{
   background:#111827;
   border:2px solid #374151;
+
   border-radius:20px;
   padding:20px;
   box-shadow:0 10px 30px rgba(0,0,0,.5);
+  
 }
 
 /* SETTING ROW */
@@ -119,9 +116,6 @@ input:checked + .slider:before{
 .action-btn:hover{
   transform:translateY(-2px);
 }
-
-
-
 </style>
 </head>
 
@@ -129,52 +123,40 @@ input:checked + .slider:before{
 
 <div class="content">
 
-  <div class="sub">
-    Einstellungen
+  <div class="sub">Einstellungen</div>
+
+  <div class="card">
+
+    <!-- SOUND -->
+    <div class="setting">
+      <div class="setting-label">Soundeffekte</div>
+      <label class="switch">
+        <input type="checkbox" id="soundToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- VIBRATION -->
+    <div class="setting">
+      <div class="setting-label">Vibration</div>
+      <label class="switch">
+        <input type="checkbox" id="vibrationToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
   </div>
-
-
-
-<div class="card">
-
-  <!-- SOUND -->
-  <div class="setting">
-    <div class="setting-label">Soundeffekte</div>
-    <label class="switch">
-      <input type="checkbox" id="soundToggle">
-      <span class="slider"></span>
-    </label>
-  </div>
-
-  <!-- VIBRATION -->
-  <div class="setting">
-    <div class="setting-label">Vibration</div>
-    <label class="switch">
-      <input type="checkbox" id="vibrationToggle">
-      <span class="slider"></span>
-    </label>
-  </div>
-
-</div>
 
 <div class="card" style="margin-top:16px;">
-
-  <button class="action-btn" onclick="resetWorkoutProgress()">
-    Workout-Fortschritt zurücksetzen
+  <button class="action-btn danger" onclick="resetAll()">
+    Alles zurücksetzen
   </button>
+</div>
 
-  <button class="action-btn" onclick="resetWeek()">
-    Woche zurücksetzen
-  </button>
-
-  <button class="action-btn danger" onclick="resetStreak()">
-    Streak löschen
-  </button>
 
 </div>
-</div>
+
 <script>
-
 /* =========================
    LOAD SETTINGS
 ========================= */
@@ -194,55 +176,29 @@ soundToggle.onchange = () => {
 vibrationToggle.onchange = () => {
   localStorage.setItem("vibration", vibrationToggle.checked ? "on" : "off");
 };
+</script>
 
+
+<script>
 /* =========================
-   ACTIONS
+   RESET ACTION
 ========================= */
-function resetWorkoutProgress(){
 
-  const w = localStorage.getItem("selectedWeek") || "1";
-  const d = localStorage.getItem("selectedDay") || "Push";
+/** Alles zurücksetzen */
+function resetAll(){
+  if(!confirm("Willst du wirklich alles zurücksetzen? History, Fortschritt und XP werden gelöscht.")) return;
 
-  localStorage.setItem("workoutProgress", JSON.stringify({
-    week: Number(w),
-    day: d,
-    exIndex: 0,
-    setIndex: 0
-  }));
+  localStorage.removeItem("history");        // Trainingshistorie löschen
+  localStorage.removeItem("lastDay");        // zuletzt gespielter Tag löschen
+  localStorage.removeItem("totalXp");        // gesamte XP löschen
+  localStorage.removeItem("workoutSession"); // aktuelle Session löschen
 
-  alert("Aktuelles Workout neu gestartet");
-}
-
-function resetWeek(){
-
-  // Woche & Trainingstag auf Start
-  localStorage.setItem("selectedWeek", "1");
+  // Startpunkt auf Woche 1 / Tag Push setzen
+  localStorage.setItem("selectedWeek", 1);
   localStorage.setItem("selectedDay", "Push");
-  localStorage.setItem("lastDay", "Push");
 
-  // laufendes Workout zurücksetzen
-  localStorage.setItem("workoutProgress", JSON.stringify({
-    week: 1,
-    day: "Push",
-    exIndex: 0,
-    setIndex: 0
-  }));
-
-  alert("Plan auf Woche 1 / Push zurückgesetzt");
+  alert("Alles zurückgesetzt! Du startest wieder bei Woche 1 / Push.");
 }
-
-function resetStreak(){
-  localStorage.removeItem("streak");
-  alert("Streak gelöscht");
-}
-
-/* =========================
-   NAV
-========================= */
-function goBack(){
-  history.back();
-}
-
 </script>
 
 <script src="../components/layout.js"></script>

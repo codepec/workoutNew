@@ -13,8 +13,6 @@
 
 <link rel="stylesheet" href="../styles/app.css">
 
-
-
 <style>
 
 /* CARD AREA */
@@ -31,7 +29,6 @@
   text-align:center;
 }
 
-/* EXERCISE TITLE */
 .exercise{
   font-size:1.4rem;
   font-weight:900;
@@ -39,7 +36,6 @@
   text-align:center;
 }
 
-/* MUSCLE ICON HEARTBEAT */
 .muscle-icon{
   width:140px;
   margin:14px auto;
@@ -55,7 +51,6 @@
   70%{transform:scale(1)}
 }
 
-/* SET PROGRESS */
 .set-box{
   margin-top:6px;
   font-weight:700;
@@ -77,10 +72,9 @@
   transition:width .3s ease;
 }
 
-/* INFO GRID */
 .info-grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:10px;
   margin-top:16px;
 }
@@ -103,7 +97,11 @@
   font-weight:800;
 }
 
-/* ===== BUTTON BEAT (ruhig) ===== */
+.diff-row{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
 
 .beat-btn{
   margin-top:18px;
@@ -111,8 +109,6 @@
   animation: buttonbeat 2.8s ease-in-out infinite;
 }
 
-
-/* PAUSE */
 #pauseContainer{
   display:none;
   flex-direction:column;
@@ -128,6 +124,60 @@
 
 #skipPauseBtn{
   margin-top:30px;
+}
+
+/* ===== ACHIEVEMENT POPUP ===== */
+.ach-popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+  animation:fadeIn .25s ease;
+}
+
+.ach-popup.hidden{
+  display:none;
+}
+
+.ach-box{
+  background:#111827;
+  border:2px solid #22c55e;
+  border-radius:22px;
+  padding:26px;
+  width:90%;
+  max-width:420px;
+  text-align:center;
+  box-shadow:0 0 40px rgba(34,197,94,.4);
+  animation:pop .35s ease;
+}
+
+.ach-title{
+  font-size:1.3rem;
+  font-weight:900;
+  margin-bottom:16px;
+  color:#22c55e;
+}
+
+.ach-item{
+  background:#020617;
+  border:1px solid #1f2937;
+  border-radius:12px;
+  padding:10px;
+  margin-top:8px;
+  font-weight:700;
+}
+
+@keyframes pop{
+  from{transform:scale(.8);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
 }
 
 </style>
@@ -147,6 +197,15 @@
 
 <div id="weekDay"></div>
 
+<!-- Achievement Popup -->
+<div id="achPopup" class="ach-popup hidden">
+  <div class="ach-box">
+    <div class="ach-title">🏆 Achievement freigeschaltet</div>
+    <div id="achList"></div>
+    <button onclick="closeAchPopup()" class="primary">Nice!</button>
+  </div>
+</div>
+
 </div>
 
 <script src="../components/layout.js"></script>
@@ -156,9 +215,28 @@ loadLayout("../pages/cards.html","../pages/preview.html");
 
 <script>
 /* =========================
-   WORKOUT LOGIC
+   SESSION + PROGRESS
 ========================= */
+
 const PROGRESS_KEY="workoutProgress";
+
+let session = JSON.parse(localStorage.getItem("workoutSession"));
+
+if(!session || session.finished){
+  location.href="../index.html";
+}
+
+if(!session.difficultyFactor) session.difficultyFactor = 1.0;
+
+const week = session.week;
+const day = session.day;
+
+document.getElementById("weekDay").innerText =
+  `Woche ${week} — ${day}`;
+
+/* =========================
+   ICON MAP
+========================= */
 
 const ICONS={
   Chest:"chest.svg",
@@ -169,13 +247,18 @@ const ICONS={
   Triceps:"triceps.svg"
 };
 
-const week = Number(localStorage.getItem("selectedWeek"));
-const day = localStorage.getItem("selectedDay");
+/* =========================
+   STATE
+========================= */
 
-let exercises=[], exIndex=0, setIndex=0, pauseInterval=null;
+let exercises=[];
+let exIndex=0;
+let setIndex=0;
+let pauseInterval=null;
 
-document.getElementById("weekDay").innerText =
-`Woche ${week} — ${day}`;
+/* =========================
+   LOAD DATA
+========================= */
 
 loadData();
 
@@ -187,8 +270,11 @@ async function loadData(){
   showCard();
 }
 
-function showCard(){
+/* =========================
+   CARD RENDER
+========================= */
 
+function showCard(){
   hidePause();
   const root=document.getElementById("cardContainer");
   root.innerHTML="";
@@ -217,42 +303,91 @@ function showCard(){
   img.className="muscle-icon";
   card.appendChild(img);
 
-  card.innerHTML+=`<div class="set-box">
-    Satz ${setIndex+1} / ${sets}
-  </div>`;
+  card.innerHTML+=`
+    <div class="set-box">
+      Satz ${setIndex+1} / ${sets}
+    </div>`;
 
   const prog=document.createElement("div");
   prog.className="set-progress";
   prog.innerHTML=`<div class="set-progress-fill"
-     style="width:${(setIndex/sets)*100}%"></div>`;
+    style="width:${(setIndex/sets)*100}%"></div>`;
   card.appendChild(prog);
 
   const grid=document.createElement("div");
   grid.className="info-grid";
   grid.innerHTML=`
-    <div class="badge"><div class="badge-label">Wdh</div><div class="badge-value">${ex.repetitions}</div></div>
-    <div class="badge"><div class="badge-label">Gewicht</div><div class="badge-value">${ex.weight} kg</div></div>
-    <div class="badge"><div class="badge-label">Pause</div><div class="badge-value">${pause}s</div></div>
+    <div class="badge">
+      <div class="badge-label">Wdh</div>
+      <div class="badge-value">${ex.repetitions}</div>
+    </div>
+
+    <div class="badge">
+      <div class="badge-label">Gewicht</div>
+      <div class="badge-value">${ex.weight} kg</div>
+    </div>
+
+    <div class="badge">
+      <div class="badge-label">Pause</div>
+      <div class="badge-value">${pause}s</div>
+    </div>
+
+    <div class="badge">
+      <div class="badge-label">XP</div>
+      <div class="badge-value">${ex.xp}</div>
+    </div>
   `;
   card.appendChild(grid);
+
+  const diff=document.createElement("div");
+  diff.className="diff-row";
+  diff.innerHTML=`
+    <button class="secondary" onclick="adjustXp(-1)">−</button>
+    <button class="secondary" onclick="adjustXp(1)">+</button>
+  `;
+  card.appendChild(diff);
 
   const btn=document.createElement("button");
   btn.className="primary beat-btn";
   btn.innerText="Satz erledigt";
   btn.onclick=()=>completeSet(sets,pause);
-
   card.appendChild(btn);
+
   root.appendChild(card);
 }
 
+/* =========================
+   XP BUTTON LOGIC
+========================= */
+function adjustXp(delta){
+  if(!session.xpAdjustments) session.xpAdjustments = {};
+  const key = `${exIndex}_${setIndex}`;
+  session.xpAdjustments[key] = (session.xpAdjustments[key] || 0) + delta;
+  localStorage.setItem("workoutSession", JSON.stringify(session));
+  showCard();
+}
+
+/* =========================
+   SET LOGIC
+========================= */
+
 function completeSet(sets,pause){
-  setIndex++; saveProgress();
+  setIndex++;
+  saveProgress();
+
   if(setIndex>=sets){
-    exIndex++; setIndex=0; saveProgress(); showCard();
+    exIndex++;
+    setIndex=0;
+    saveProgress();
+    showCard();
   } else {
     pause>0 ? startPause(pause) : showCard();
   }
 }
+
+/* =========================
+   PAUSE TIMER
+========================= */
 
 function startPause(seconds){
   cardContainer.style.display="none";
@@ -277,7 +412,9 @@ function startPause(seconds){
 
 function drawPause(ctx,r,t){
   const c=70,rad=60,p=(t-r)/t;
+
   ctx.clearRect(0,0,140,140);
+
   ctx.beginPath();
   ctx.arc(c,c,rad,0,2*Math.PI);
   ctx.strokeStyle="#1f2937";
@@ -297,6 +434,10 @@ function drawPause(ctx,r,t){
   ctx.fillText(Math.max(r,0),c,c);
 }
 
+/* =========================
+   STORAGE
+========================= */
+
 function saveProgress(){
   localStorage.setItem(PROGRESS_KEY,
     JSON.stringify({week,day,exIndex,setIndex}));
@@ -315,12 +456,143 @@ function hidePause(){
   cardContainer.style.display="block";
 }
 
-function finish(){
-  localStorage.removeItem(PROGRESS_KEY);
-  location.href="../index.html";
+/* =========================
+   ACHIEVEMENT ENGINE
+========================= */
+
+const ACH = [
+  {label:"First Blood", rule:s=>s.count>=1},
+  {label:"Rookie", rule:s=>s.count>=3},
+  {label:"Committed", rule:s=>s.count>=5},
+  {label:"Addicted", rule:s=>s.count>=10},
+  {label:"Streak 5", rule:s=>s.streak>=5},
+  {label:"XP 1000", rule:s=>s.xp>=1000},
+  {label:"Hardcore", rule:s=>s.hard>=1},
+  {label:"Push Master", rule:s=>s.push>=10},
+  {label:"Pull Master", rule:s=>s.pull>=10},
+  {label:"Leg Hero", rule:s=>s.legs>=10},
+  {label:"Marathon", rule:s=>s.long>=1},
+  {label:"Speed Runner", rule:s=>s.short>=5},
+
+  {label:"Double Trouble", rule:s=>s.count>=15},
+  {label:"Iron Will", rule:s=>s.count>=20},
+  {label:"Consistency King", rule:s=>s.streak>=10},
+  {label:"XP 5000", rule:s=>s.xp>=5000},
+  {label:"XP 10000", rule:s=>s.xp>=10000},
+  {label:"Pain Seeker", rule:s=>s.hard>=5},
+  {label:"Push Legend", rule:s=>s.push>=20},
+  {label:"Pull Legend", rule:s=>s.pull>=20},
+  {label:"Legs Legend", rule:s=>s.legs>=20},
+  {label:"Ultra Marathon", rule:s=>s.long>=3},
+  {label:"Quick Draw", rule:s=>s.short>=10},
+  {label:"Half Century", rule:s=>s.count>=50},
+  {label:"Century", rule:s=>s.count>=100},
+  {label:"Diamond Streak", rule:s=>s.streak>=20},
+  {label:"XP 20000", rule:s=>s.xp>=20000},
+  {label:"XP 50000", rule:s=>s.xp>=50000},
+  {label:"Beast Mode", rule:s=>s.hard>=10},
+  {label:"Push God", rule:s=>s.push>=50},
+  {label:"Pull God", rule:s=>s.pull>=50},
+  {label:"Legs God", rule:s=>s.legs>=50},
+  {label:"Iron Marathon", rule:s=>s.long>=5},
+  {label:"Flash", rule:s=>s.short>=20},
+  {label:"Workout Machine", rule:s=>s.count>=200},
+  {label:"Legendary", rule:s=>s.xp>=100000},
+  {label:"Streak 50", rule:s=>s.streak>=50},
+  {label:"Ultimate Beast", rule:s=>s.hard>=25},
+  {label:"Push Titan", rule:s=>s.push>=100},
+  {label:"Pull Titan", rule:s=>s.pull>=100},
+  {label:"Legs Titan", rule:s=>s.legs>=100},
+  {label:"Marathon Master", rule:s=>s.long>=10},
+  {label:"Speed Demon", rule:s=>s.short>=50}
+];
+
+function calcXP(e){ return e.xp + (session.xpAdjustments?.[`${exIndex}_${setIndex}`]||0); }
+function calcStreak(list){
+  if(list.length===0) return 0;
+  let s=1;
+  for(let i=list.length-1;i>0;i--){
+    const a=new Date(list[i].start).toDateString();
+    const b=new Date(list[i-1].start).toDateString();
+    if(a!==b) break;
+    s++;
+  }
+  return s;
 }
 
-function goToPreview(){ window.location.href = "../pages/preview.html"; }
+function buildStats(list){
+ return {
+  count:list.length,
+  xp:list.reduce((s,e)=>s+e.xp,0),
+  streak:calcStreak(list),
+  totalMin:list.reduce((s,e)=>s+e.duration,0)/60000,
+  hard:list.filter(e=>e.difficulty>1.2).length,
+  push:list.filter(e=>e.day==="Push").length,
+  pull:list.filter(e=>e.day==="Pull").length,
+  legs:list.filter(e=>e.day==="Legs").length,
+  long:list.filter(e=>e.duration>90*60000).length,
+  short:list.filter(e=>e.duration<20*60000).length
+ };
+}
+
+function getUnlocked(stats){ return ACH.filter(a=>a.rule(stats)).map(a=>a.label); }
+
+function showAchPopup(newOnes){
+ if(newOnes.length===0) return;
+ const list=document.getElementById("achList");
+ list.innerHTML="";
+ newOnes.forEach(n=>{
+   const d=document.createElement("div");
+   d.className="ach-item";
+   d.innerText=n;
+   list.appendChild(d);
+ });
+ document.getElementById("achPopup").classList.remove("hidden");
+}
+
+function closeAchPopup(){
+ document.getElementById("achPopup").classList.add("hidden");
+ location.href="../index.html";
+}
+
+/* =========================
+   FINISH WORKOUT
+========================= */
+
+function finish(){
+ const hist = JSON.parse(localStorage.getItem("history")||"[]");
+ const beforeStats = buildStats(hist);
+ const beforeUnlocked = getUnlocked(beforeStats);
+
+ session.finished=true;
+ session.finishedAt=Date.now();
+
+ const entry={
+  week:session.week,
+  day:session.day,
+  start:session.startedAt,
+  end:session.finishedAt,
+  duration:session.finishedAt-session.startedAt,
+  difficulty:session.difficultyFactor,
+  xp:exercises.reduce((s,e)=>s+e.xp,0)
+ };
+
+ hist.push(entry);
+ localStorage.setItem("history", JSON.stringify(hist));
+ localStorage.setItem("lastDay", session.day);
+ localStorage.setItem("workoutSession", JSON.stringify(session));
+ localStorage.removeItem(PROGRESS_KEY);
+
+ const afterStats = buildStats(hist);
+ const afterUnlocked = getUnlocked(afterStats);
+ const newOnes = afterUnlocked.filter(a=>!beforeUnlocked.includes(a));
+
+ // Add XP to total
+ const oldXp = Number(localStorage.getItem("totalXp")||0);
+ localStorage.setItem("totalXp", oldXp + entry.xp);
+
+ showAchPopup(newOnes);
+}
 
 </script>
 

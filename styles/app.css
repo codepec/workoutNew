@@ -1,8 +1,47 @@
-html, body {
-  margin: 0;
-  font-family: 'Segoe VI', system-ui, Arial, sans-serif;
-  background: linear-gradient(135deg, #020617, #0f172a); color:white;
 
+/* =====================
+   ROOT BACKGROUND LAYER
+===================== */
+
+html {
+  background: #020617;
+}
+
+/* =====================
+   BODY FULLSCREEN LAYER
+===================== */
+
+body {
+  min-height: 100dvh;
+  background:
+    linear-gradient(135deg,#020617,#0f172a);
+  color: white;
+  font-family: 'Segoe VI', system-ui, Arial, sans-serif;
+  font-family: system-ui, Arial;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =====================
+   SAFE AREA FIX (iOS)
+===================== */
+
+body::before {
+  content:"";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg,#020617,#0f172a);
+  z-index: -1;
+}
+
+
+header {
+  padding-top: env(safe-area-inset-top);
+}
+
+.tabs {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 
@@ -119,50 +158,6 @@ html, body {
   padding: 0;
   height: 100%;
   background: #020617; /* Fallback */
+  font-family: 'Segoe VI', system-ui, Arial, sans-serif;
+
 }
-
-/* =====================
-   ROOT BACKGROUND LAYER
-===================== */
-
-html {
-  background: #020617;
-}
-
-/* =====================
-   BODY FULLSCREEN LAYER
-===================== */
-
-body {
-  min-height: 100dvh;
-  background:
-    linear-gradient(135deg,#020617,#0f172a);
-  color: white;
-
-  font-family: system-ui, Arial;
-
-  display: flex;
-  flex-direction: column;
-}
-
-/* =====================
-   SAFE AREA FIX (iOS)
-===================== */
-
-body::before {
-  content:"";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg,#020617,#0f172a);
-  z-index: -1;
-}
-
-
-header {
-  padding-top: env(safe-area-inset-top);
-}
-
-.tabs {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
