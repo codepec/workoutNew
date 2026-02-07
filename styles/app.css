@@ -1,10 +1,11 @@
-html, body{
+html, body {
   margin:0;
-  font-family:'Segoe UI',system-ui,Arial,sans-serif;
-  background:linear-gradient(135deg,#020617,#0f172a);
-  color:white;
-  min-height:100dvh;  
+  padding:0;
+  min-height:100%;
+  background: linear-gradient(135deg,#020617,#0f172a);
+  overscroll-behavior:none;
 }
+
 
 
 
