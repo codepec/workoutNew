@@ -1,38 +1,79 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" data-theme="dark">
 <head>
-<meta charset="utf-8">
-<title>Iron Insanity — Dashboard</title>
-<meta name="viewport"
-content="width=device-width, initial-scale=1, viewport-fit=cover">
 
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Iron Insanity</title>
+
+<!-- iOS / PWA -->
+<meta name="theme-color" content="#020617">
+<meta name="color-scheme" content="dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#020617">
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#00FF66">
-
-<link rel="apple-touch-icon" href="./icons/icon-192x192.png">
-<link rel="icon" href="favicon.ico" type="image/png">
-
-<link rel="stylesheet" href="./styles/app.css">
+<link rel="manifest" href="/manifest.json">
 
 <style>
-/* =========================
-   BASE
-========================= */
-/*
-html, body{
-  margin:0;
-  font-family:'Segoe UI',system-ui,Arial,sans-serif;
-  background:linear-gradient(135deg,#020617,#0f172a);
-  color:white;
-  min-height:100vh;
-  align-items:center;
-  padding:20px;
+
+/* =====================
+   HARD RESET
+===================== */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #020617; /* Fallback */
 }
-*/
+
+/* =====================
+   ROOT BACKGROUND LAYER
+===================== */
+
+html {
+  background: #020617;
+}
+
+/* =====================
+   BODY FULLSCREEN LAYER
+===================== */
+
+body {
+  min-height: 100dvh;
+  background:
+    linear-gradient(135deg,#020617,#0f172a);
+  color: white;
+
+  font-family: system-ui, Arial;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* =====================
+   SAFE AREA FIX (iOS)
+===================== */
+
+body::before {
+  content:"";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg,#020617,#0f172a);
+  z-index: -1;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Iron Insanity</h1>
+
+</body>
+</html>
 
 /* HERO CARD */
 .hero-card{
