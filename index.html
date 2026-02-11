@@ -1,125 +1,137 @@
 <!doctype html>
 <html lang="de" data-theme="dark">
 <head>
-
 <meta charset="utf-8">
 <meta name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover">
-
 <title>Iron Insanity</title>
-
 <meta name="theme-color" content="#020617">
-<meta name="color-scheme" content="dark">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
 <link rel="manifest" href="/manifest.json">
 
 <style>
-
-/* RESET + BACKGROUND */
-
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: #020617;
+html,body{
+  margin:0; padding:0; height:100%;
+  background:linear-gradient(135deg,#020617,#0f172a);
+  color:white; font-family:system-ui,Arial;
+  display:flex; flex-direction:column; align-items:center;
 }
 
-body {
-  min-height: 100dvh;
-  background: linear-gradient(135deg,#020617,#0f172a);
-  color: white;
-  font-family: system-ui, Arial;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+h1{
+  margin-top:50px;
+  font-size:2rem;
+  color:#22c55e;
+  text-align:center;
+  letter-spacing:1px;
 }
-
-body::before {
-  content:"";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg,#020617,#0f172a);
-  z-index: -1;
-}
-
-/* CARD */
 
 .hero-card{
   background:#111827;
   border:2px solid #374151;
   border-radius:22px;
   padding:24px;
-  max-width:400px;
-  width:85%;
+  max-width:420px;
+  width:80%;
   text-align:center;
   box-shadow:0 10px 30px rgba(0,0,0,.5);
-  margin-top:40px;
+  margin-top:20px;
 }
 
-/* LABELS */
-
 .label-card{
-  background: rgba(34,197,94,0.1);
-  border: 2px solid #22c55e;
-  border-radius: 14px;
-  padding: 12px 20px;
-  margin-bottom: 14px;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #22c55e;
+  background:rgba(34,197,94,0.1);
+  border:2px solid #22c55e;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:12px;
+  font-weight:800;
+  font-size:1.15rem;
 }
 
 .label-card.exercise{
-  background: rgba(59,130,246,0.1);
-  border: 2px solid #fff;
-  color: #fff;
-  margin-bottom: 30px;
+  background:rgba(59,130,246,0.12);
+  border:2px solid #60a5fa;
+  color:#e5f0ff;
 }
 
-/* BUTTONS */
+.progress-box{
+  margin:10px 0;
+  text-align:left;
+}
+
+.progress-bar{
+  width:100%;
+  height:12px;
+  background:#1f2937;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.progress-fill{
+  height:100%;
+  background:#22c55e;
+  width:0%;
+  transition:.5s;
+}
+
+.train-grid{
+  margin-top:14px;
+}
+
+.train-row{
+  background:#020617;
+  border:1px solid #1f2937;
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:8px;
+  font-weight:700;
+  font-size:1rem;
+}
 
 .start-btn{
   background:#22c55e;
   color:black;
-  font-weight:700;
-  font-size:1.15rem;
+  font-weight:900;
   padding:18px;
   border:none;
   border-radius:16px;
-  cursor:pointer;
   width:100%;
-  margin-top:10px;
+  margin-top:16px;
+  cursor:pointer;
+  font-size:1.15rem;
+}
+
+.start-btn.locked{
+  background:#374151;
+  color:#9ca3af;
+  cursor:not-allowed;
 }
 
 .secondary-btn{
   background:#374151;
   color:white;
-  font-weight:700;
-  font-size:1rem;
   padding:14px;
   border:none;
   border-radius:16px;
   width:100%;
-  margin-top:12px;
+  margin-top:10px;
+  font-weight:700;
+  font-size:1rem;
 }
 
-/* TITLE */
-
-h1{
-  margin-top:60px;
-  font-size:2rem;
-  text-align:center;
-  color:#22c55e;
-}
-
-.session-info{
-  font-size:.9rem;
+.small{
+  font-size:.85rem;
   opacity:.7;
-  margin-bottom:10px;
+  margin-top:4px;
 }
 
+#weekProgressText,
+#xpProgressText{
+  color:#9ca3af;
+  margin-bottom:6px;
+  text-align:center;
+}
 </style>
 </head>
 
@@ -129,102 +141,261 @@ h1{
 
 <div class="hero-card">
 
+  <div class="label-card" id="rankBox"></div>
+
+  <!-- XP PROGRESS -->
+  <div class="progress-box">
+    <div id="xpProgressText" class="small"></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="xpProgressFill"></div>
+    </div>
+  </div>
+
   <div class="label-card" id="weekLabel"></div>
-  <div class="label-card exercise" id="dayLabel"></div>
-  <div class="session-info" id="sessionInfo"></div>
+
+  <!-- WEEK PROGRESS -->
+  <div class="progress-box">
+    <div id="weekProgressText" class="small"></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="weekProgressFill"></div>
+    </div>
+  </div>
+
+  <div class="label-card exercise" id="missionBox"></div>
+
+  <div id="trainGrid" class="train-grid"></div>
 
   <button class="start-btn" id="startBtn"></button>
 
   <button class="secondary-btn" onclick="goToPreview()">Vorschau</button>
-  <button class="secondary-btn" onclick="goToHistory()">Verlauf</button>
+  <button class="secondary-btn" onclick="goToHistory()">History</button>
   <button class="secondary-btn" onclick="changeWeek()">Woche wechseln</button>
 
 </div>
 
 <script>
 
-/* =========================
-   WORKOUT ORDER
-========================= */
+/* =======================
+   CONFIG
+======================= */
 
-const order = ["Push","Pull","Legs"];
-const week = parseInt(localStorage.getItem("selectedWeek")) || 1;
+const order=["Push","Pull","Legs"];
+const week=parseInt(localStorage.getItem("selectedWeek"))||1;
+const MIN_PAUSE_HOURS=24;
 
-const weekLabel = document.getElementById("weekLabel");
-const dayLabel = document.getElementById("dayLabel");
-const startBtn = document.getElementById("startBtn");
-const sessionInfo = document.getElementById("sessionInfo");
+/* =======================
+   DATA
+======================= */
 
-weekLabel.innerText = `Woche ${week}`;
+const history=JSON.parse(localStorage.getItem("history")||"[]");
+const totalXp=Number(localStorage.getItem("totalXp")||0);
+const session=JSON.parse(localStorage.getItem("workoutSession")||"null");
+const lastDay=localStorage.getItem("lastDay");
 
-/* =========================
-   SESSION CHECK
-========================= */
+/* =======================
+   RANK SYSTEM (8 RÄNGE)
+======================= */
 
-let session = JSON.parse(localStorage.getItem("workoutSession") || "null");
+const RANKS = [
+  { n: "Rekrut",      xp: 0 },
+  { n: "Krieger",     xp: 1200 },
+  { n: "Zerstörer",   xp: 3000 },
+  { n: "Titan",       xp: 6000 },
+  { n: "Warlord",     xp: 10000 },
+  { n: "Champion",    xp: 15000 },
+  { n: "Legende",     xp: 21000 },
+  { n: "Brutalizer",  xp: 28000 }
+];
 
-/* ---------- AKTIVE SESSION ---------- */
+function getRankData(xp){
+  let current=RANKS[0];
+  let next=null;
 
-if(session && session.finished === false){
-
-  dayLabel.innerHTML = `Aktives Training<br><strong>${session.day}</strong>`;
-
-  startBtn.innerText = "Training fortsetzen";
-
-  const startTime = new Date(session.startedAt);
-  sessionInfo.innerText =
-    "Start: " + startTime.toLocaleString();
-
-  startBtn.onclick = () => {
-    location.href="./pages/cards.html";
-  };
+  for(let i=0;i<RANKS.length;i++){
+    if(xp>=RANKS[i].xp){
+      current=RANKS[i];
+      next=RANKS[i+1]||null;
+    }
+  }
+  return {current,next};
 }
 
-/* ---------- KEINE SESSION ---------- */
+/* =======================
+   XP MULTIPLIER
+======================= */
 
+function weekMult(w){
+ if(w>=7) return 1.6;
+ if(w>=5) return 1.4;
+ if(w>=3) return 1.2;
+ return 1.0;
+}
+
+/* =======================
+   MISSIONS
+======================= */
+
+const MISSIONS={
+ Push:"🎯 Brust & Trizeps sprengen",
+ Pull:"🎯 Rücken & Bizeps zerstören",
+ Legs:"🎯 Unterkörper Kriegstag"
+};
+
+/* =======================
+   RANK BOX + XP BAR
+======================= */
+
+const rankData=getRankData(totalXp);
+
+rankBox.innerHTML=
+`🎖 Rang: ${rankData.current.n}
+<div class="small">
+XP ${totalXp} • Wochenbonus x${weekMult(week)}
+</div>`;
+
+let xpPct=100;
+let xpText="Max Rang erreicht";
+
+if(rankData.next){
+ const span=rankData.next.xp-rankData.current.xp;
+ const gained=totalXp-rankData.current.xp;
+ xpPct=Math.min(100,(gained/span)*100);
+ xpText=`${totalXp} / ${rankData.next.xp} XP → ${rankData.next.n}`;
+}
+
+xpProgressFill.style.width=xpPct+"%";
+xpProgressText.innerText=xpText;
+
+/* =======================
+   WEEK PROGRESS
+======================= */
+
+weekLabel.innerText=`Woche ${week}`;
+
+const weekEntries=history.filter(e=>e.week===week);
+const done=new Set(weekEntries.map(e=>e.day)).size;
+
+weekProgressText.innerText=`${done}/3 Trainings erledigt`;
+weekProgressFill.style.width=(done/3*100)+"%";
+
+/* =======================
+   NEXT DAY
+======================= */
+
+function nextFrom(last){
+ if(!last) return "Push";
+ return order[(order.indexOf(last)+1)%3];
+}
+
+const nextDay=nextFrom(lastDay);
+
+/* =======================
+   COOLDOWN
+======================= */
+
+let cooldown=0;
+const lastEntry=history.at(-1);
+
+if(lastEntry){
+ cooldown=
+  lastEntry.end+
+  MIN_PAUSE_HOURS*3600000-
+  Date.now();
+}
+
+function hoursLeft(ms){
+ const h=Math.floor(ms/3600000);
+ const m=Math.floor((ms%3600000)/60000);
+ return h+"h "+m+"m";
+}
+
+/* =======================
+   MISSION BOX
+======================= */
+
+missionBox.innerText=MISSIONS[nextDay];
+
+/* =======================
+   TRAIN GRID
+======================= */
+
+trainGrid.innerHTML="";
+
+order.forEach(day=>{
+ let icon="🔒",txt="gesperrt";
+
+ if(day===lastDay){
+  icon="✅"; txt="abgeschlossen";
+ }
+
+ if(day===nextDay){
+  if(cooldown<=0){
+   icon="🔥"; txt="bereitgestellt";
+  } else {
+   icon="⏳"; txt=hoursLeft(cooldown);
+  }
+ }
+
+ trainGrid.innerHTML+=
+ `<div class="train-row">
+   <div>${day}</div>
+   <div>${icon} ${txt}</div>
+  </div>`;
+});
+
+if(done===3){
+ trainGrid.innerHTML+=
+ `<div class="train-row">
+   <div>Boss Workout</div>
+   <div>🔥 freigeschaltet</div>
+  </div>`;
+}
+
+/* =======================
+   START BUTTON
+======================= */
+
+if(session && session.finished===false){
+
+ startBtn.innerText="Training fortsetzen";
+ startBtn.onclick=
+  ()=>location.href="./pages/cards.html";
+}
+else if(cooldown>0){
+
+ startBtn.innerText=
+  "⏳ Regeneration "+hoursLeft(cooldown);
+
+ startBtn.classList.add("locked");
+ startBtn.disabled=true;
+}
 else{
 
-  const lastDay = localStorage.getItem("lastDay");
+ startBtn.innerText="🚀 Mission starten";
 
-  function nextFrom(last){
-    if(!last) return "Push";
-    return order[(order.indexOf(last)+1)%order.length];
-  }
+ startBtn.onclick=()=>{
+  localStorage.setItem(
+   "workoutSession",
+   JSON.stringify({
+    week,
+    day:nextDay,
+    startedAt:Date.now(),
+    finished:false,
+    difficultyFactor:1
+   })
+  );
 
-  const nextDay = nextFrom(lastDay);
-
-  dayLabel.innerHTML =
-    `Nächstes Training<br><strong>${nextDay}</strong>`;
-
-  startBtn.innerText = "Training starten";
-  sessionInfo.innerText = "";
-
-  startBtn.onclick = () => {
-
-    const newSession = {
-      week: week,
-      day: nextDay,
-      startedAt: Date.now(),
-      finished:false,
-      difficultyFactor:1.0
-    };
-
-    localStorage.setItem(
-      "workoutSession",
-      JSON.stringify(newSession)
-    );
-
-    location.href="./pages/cards.html";
-  };
+  location.href="./pages/cards.html";
+ };
 }
 
-/* =========================
-   NAVIGATION
-========================= */
+/* =======================
+   NAV
+======================= */
 
-function goToPreview(){ location.href="./pages/preview.html"; }
-function goToHistory(){ location.href="./pages/history.html"; }
-function changeWeek(){ location.href="./pages/week.html"; }
+function goToPreview(){location.href="./pages/preview.html";}
+function goToHistory(){location.href="./pages/history.html";}
+function changeWeek(){location.href="./pages/week.html";}
 
 </script>
 

@@ -11,13 +11,56 @@
 
 <style>
 
-.content{
-  padding:25px;
-  display:flex;
-  flex-direction:column;
-  margin-top:20px;
+/* =========================
+   BASE
+========================= */
+html,body{
+  margin:0;
+  font-family:system-ui,Arial;
+  background:linear-gradient(135deg,#020617,#0f172a);
+  color:white;
 }
 
+/* =========================
+   HERO / HEADER
+========================= */
+.hero{
+  width:100%;
+  padding:32px 22px 20px;
+  border-bottom:1px solid #1f2937;
+}
+
+.hero-inner{
+  max-width:980px;
+  margin:0 auto;
+}
+
+.hero-title{
+  font-size:2.3rem;
+  font-weight:1000;
+}
+
+.hero-sub{
+  margin-top:6px;
+  color:#9ca3af;
+  font-size:.95rem;
+  font-weight:600;
+}
+
+/* =========================
+   CONTENT
+========================= */
+.content{
+  padding:20px;
+  max-width:980px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+}
+
+/* =========================
+   CARD
+========================= */
 .card{
   background:#111827;
   border:2px solid #374151;
@@ -25,11 +68,13 @@
   padding:18px;
   margin-bottom:16px;
   box-shadow:0 10px 30px rgba(0,0,0,.5);
+  width:100%;
+  box-sizing:border-box;
 }
 
 .entry-title{
   font-weight:900;
-  font-size:1.05rem;
+  font-size:1.3rem; /* etwas größer */
   margin-bottom:10px;
 }
 
@@ -58,8 +103,9 @@
   font-weight:800;
 }
 
-/* ACHIEVEMENTS */
-
+/* =========================
+   ACHIEVEMENTS
+========================= */
 .ach-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
@@ -90,34 +136,52 @@
   margin-top:10px;
 }
 
+@media screen {
+  .hero{
+  width: 85%;
+  };
+  .list{
+      width: 90%;
+  }
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="content">
-
-<div class="sub">History</div>
-
-<div id="summary" class="card"></div>
-
-<div id="achievements" class="card">
-  <div class="entry-title">🏆 Achievements</div>
-  <div class="ach-grid" id="achGrid"></div>
+<!-- =========================
+   HERO / HEADER
+========================= -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-title">History</div>
+    <div class="hero-sub" id="heroSub1">Deine Trainingsstatistiken</div>
+    <div class="hero-sub" id="heroSub2">Workouts, XP & Achievements</div>
+  </div>
 </div>
 
-<div id="historyList"></div>
+<!-- =========================
+   CONTENT
+========================= -->
+<div class="content">
 
-<div id="hint" class="hint"></div>
+  <div id="summary" class="card"></div>
 
+  <div id="achievements" class="card">
+    <div class="entry-title">🏆 Achievements</div>
+    <div class="ach-grid" id="achGrid"></div>
+  </div>
+
+  <div id="historyList"></div>
+
+  <div id="hint" class="hint"></div>
 </div>
 
 <script>
-
 /* ======================
    FORMAT HELPERS
 ====================== */
-
 function fmtDateBlock(ts){
   const d = new Date(ts);
   return `
@@ -134,18 +198,14 @@ function fmtDuration(ms){
 /* ======================
    XP + LEVEL
 ====================== */
-
-/* Neue XP-Logik passend zu cards.html */
 function calcXP(e){
   if(e.exercises){
-    // Summiere XP pro Übung inkl. eventueller Adjustments
     return e.exercises.reduce((s,ex,idx)=>{
       let key = `${idx}_0`;
       const adjust = e.xpAdjustments?.[key]||0;
       return s + (ex.xp || 0) + adjust;
     },0);
   }
-  // Fallback für ältere Einträge ohne exercises
   return e.xp || 0;
 }
 
@@ -156,14 +216,9 @@ function calcLevel(xp){
 /* ======================
    STREAK
 ====================== */
-
 function calcStreak(list){
   if(list.length===0) return 0;
-
-  const days = [...new Set(list.map(e =>
-    new Date(e.start).toDateString()
-  ))].sort().reverse();
-
+  const days = [...new Set(list.map(e=>new Date(e.start).toDateString()))].sort().reverse();
   let s=1;
   for(let i=1;i<days.length;i++){
     const a=new Date(days[i-1]);
@@ -177,100 +232,40 @@ function calcStreak(list){
 /* ======================
    ACHIEVEMENTS
 ====================== */
-
 const ACH = [
   {label:"First Blood", rule:s=>s.count>=1},
   {label:"Rookie", rule:s=>s.count>=3},
   {label:"Committed", rule:s=>s.count>=5},
   {label:"Addicted", rule:s=>s.count>=10},
-  {label:"Unstoppable", rule:s=>s.count>=25},
-  {label:"Machine", rule:s=>s.count>=50},
   {label:"Streak 3", rule:s=>s.streak>=3},
-  {label:"Streak 5", rule:s=>s.streak>=5},
-  {label:"Streak 7", rule:s=>s.streak>=7},
-  {label:"Streak 14", rule:s=>s.streak>=14},
-  {label:"Streak 30", rule:s=>s.streak>=30},
   {label:"XP 500", rule:s=>s.xp>=500},
-  {label:"XP 1000", rule:s=>s.xp>=1000},
-  {label:"XP 2500", rule:s=>s.xp>=2500},
-  {label:"XP 5000", rule:s=>s.xp>=5000},
-  {label:"XP 10000", rule:s=>s.xp>=10000},
-  {label:"1h Total", rule:s=>s.totalMin>=60},
-  {label:"3h Total", rule:s=>s.totalMin>=180},
-  {label:"5h Total", rule:s=>s.totalMin>=300},
-  {label:"10h Total", rule:s=>s.totalMin>=600},
-  {label:"Hardcore", rule:s=>s.hard>=1},
-  {label:"Beast Mode", rule:s=>s.hard>=5},
-  {label:"Savage", rule:s=>s.hard>=10},
-  {label:"Push Master", rule:s=>s.push>=10},
-  {label:"Pull Master", rule:s=>s.pull>=10},
-  {label:"Leg Day Hero", rule:s=>s.legs>=10},
-  {label:"Early Bird", rule:s=>s.morning>=5},
-  {label:"Night Grinder", rule:s=>s.night>=5},
-  {label:"Weekend Warrior", rule:s=>s.weekend>=5},
-  {label:"Marathon", rule:s=>s.long>=1},
-  {label:"Ultra Session", rule:s=>s.long>=5},
-  {label:"Speed Runner", rule:s=>s.short>=5},
 ];
-
 
 /* ======================
    SUMMARY
 ====================== */
-
 function renderSummary(list){
-
  const xp = list.reduce((s,e)=>s+calcXP(e),0);
  const dur = list.reduce((s,e)=>s+e.duration,0);
  const level = calcLevel(xp);
  const streak = calcStreak(list);
-
- const stats = {
-  xp,
-  count:list.length,
-  streak,
-  totalMin: Math.round(dur/60000),
-  hard: list.filter(e=>e.difficulty>1.2).length,
-  push: list.filter(e=>e.day==="Push").length,
-  pull: list.filter(e=>e.day==="Pull").length,
-  legs: list.filter(e=>e.day==="Legs").length,
-  long: list.filter(e=>e.duration>90*60000).length,
-  short: list.filter(e=>e.duration<20*60000).length,
-  morning: list.filter(e=>{
-    const h=new Date(e.start).getHours();
-    return h<10;
-  }).length,
-  night: list.filter(e=>{
-    const h=new Date(e.start).getHours();
-    return h>=20;
-  }).length,
-  weekend: list.filter(e=>{
-    const d=new Date(e.start).getDay();
-    return d===0 || d===6;
-  }).length
- };
-
+ const stats = {xp,count:list.length,streak,totalMin:Math.round(dur/60000)};
  summary.innerHTML = `
- <div class="entry-title">🔥 Progress</div>
- <div class="row">
-  <div class="badge"><div class="badge-label">Workouts</div><div class="badge-value">${stats.count}</div></div>
-  <div class="badge"><div class="badge-label">Zeit</div><div class="badge-value">${stats.totalMin}m</div></div>
-  <div class="badge"><div class="badge-label">XP</div><div class="badge-value">${xp}</div></div>
-  <div class="badge"><div class="badge-label">Level</div><div class="badge-value">${level}</div></div>
- </div>`;
-
+   <div class="entry-title">🔥 Progress</div>
+   <div class="row">
+     <div class="badge"><div class="badge-label">Workouts</div><div class="badge-value">${stats.count}</div></div>
+     <div class="badge"><div class="badge-label">Zeit</div><div class="badge-value">${stats.totalMin}m</div></div>
+     <div class="badge"><div class="badge-label">XP</div><div class="badge-value">${xp}</div></div>
+     <div class="badge"><div class="badge-label">Level</div><div class="badge-value">${level}</div></div>
+   </div>`;
  return stats;
 }
-
 
 /* ======================
    ACH RENDER
 ====================== */
-
 function renderAchievements(stats){
-
  achGrid.innerHTML="";
-
  ACH.forEach(a=>{
    if(a.rule(stats)){
      const el=document.createElement("div");
@@ -279,77 +274,46 @@ function renderAchievements(stats){
      achGrid.appendChild(el);
    }
  });
-
  if(achGrid.children.length===0){
    achGrid.innerHTML="<div class='hint'>Noch keine Achievements freigeschaltet</div>";
  }
 }
 
-
 /* ======================
    ENTRY CARD
 ====================== */
-
 function renderEntry(e){
-
  const card=document.createElement("div");
  card.className="card";
-
  card.innerHTML=`
-  <div class="entry-title">
-   Woche ${e.week} — ${e.day}
-  </div>
-
-  <div class="row">
-   <div class="badge">
-    <div class="badge-label">Start</div>
-    <div class="badge-value">${fmtDateBlock(e.start)}</div>
+   <div class="entry-title">
+     Woche ${e.week} — ${e.day}
    </div>
-
-   <div class="badge">
-    <div class="badge-label">Ende</div>
-    <div class="badge-value">${fmtDateBlock(e.end)}</div>
-   </div>
-
-   <div class="badge">
-    <div class="badge-label">Dauer</div>
-    <div class="badge-value">${fmtDuration(e.duration)}</div>
-   </div>
-
-   <div class="badge">
-    <div class="badge-label">XP</div>
-    <div class="badge-value">${calcXP(e)}</div>
-   </div>
-  </div>
- `;
-
+   <div class="row">
+     <div class="badge"><div class="badge-label">Start</div><div class="badge-value">${fmtDateBlock(e.start)}</div></div>
+     <div class="badge"><div class="badge-label">Ende</div><div class="badge-value">${fmtDateBlock(e.end)}</div></div>
+     <div class="badge"><div class="badge-label">Dauer</div><div class="badge-value">${fmtDuration(e.duration)}</div></div>
+     <div class="badge"><div class="badge-label">XP</div><div class="badge-value">${calcXP(e)}</div></div>
+   </div>`;
  return card;
 }
 
 /* ======================
    LOAD
 ====================== */
-
 function load(){
-
  const list = JSON.parse(localStorage.getItem("history")||"[]");
-
  if(list.length===0){
    hint.innerText="Noch keine Trainings abgeschlossen.";
    return;
  }
-
  const stats = renderSummary(list);
  renderAchievements(stats);
-
  list.slice().reverse().forEach(e=>{
    historyList.appendChild(renderEntry(e));
  });
-
 }
-
 load();
-
 </script>
 
 <script src="../components/layout.js"></script>
