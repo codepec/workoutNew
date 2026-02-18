@@ -2,131 +2,177 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>Iron Insanity — Hardcore Workout</title>
+<title>Iron Insanity — OMEGA PRIME HUD</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="../manifest.json">
 <meta name="theme-color" content="#0f172a">
 <link rel="stylesheet" href="../styles/app.css">
 
 <style>
-/* ======================
+
+/* =========================
    BASE
-====================== */
-body, html {
+========================= */
+html,body{
   margin:0;
-  font-family: system-ui, Arial, sans-serif;
-  background: linear-gradient(135deg, #0f172a, #020617);
+  font-family:system-ui,Arial;
+  background:radial-gradient(circle at top,#0f172a,#020617 60%);
   color:white;
   overflow-x:hidden;
 }
-.page { max-width:480px; margin:0 auto; padding-bottom:120px; }
 
-/* ======================
-   HERO / XP BAR
-====================== */
-.hero-bar {
-  position: sticky;
+/* centered page width */
+.page{
+  max-width:520px;
+  margin:0 auto;
+}
+
+/* =========================
+   OMEGA HERO HUD — FULL WIDTH
+========================= */
+.hero-bar{
+  position:sticky;
   top:0;
-  background:#111827;
-  padding:12px 16px;
-  z-index:10;
-  border-bottom:1px solid #1f2937;
-  display:flex; flex-direction:column; gap:6px;
-}
-.hero-bar .level {
-  font-weight:900;
-  font-size:1.3rem;
-}
-.hero-bar .xp-bar {
+  z-index:50;
   width:100%;
+  background: linear-gradient(180deg,#020617,#020617ee 70%,transparent);
+  border-bottom:1px solid #1f2937;
+  box-shadow:0 10px 40px rgba(0,0,0,.8);
+  backdrop-filter:blur(10px);
+}
+.hero-inner{
+  max-width:520px;
+  margin:0 auto;
+  padding:14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+/* HUD ROW */
+.hud-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.level{
+  font-weight:1000;
+  font-size:1.25rem;
+  letter-spacing:.5px;
+}
+.session-xp{
+  font-size:.85rem;
+  opacity:.85;
+  font-weight:700;
+}
+
+/* XP BAR */
+.xp-bar{
   height:12px;
   background:#1f2937;
   border-radius:999px;
   overflow:hidden;
 }
-.hero-bar .xp-fill {
+.xp-fill{
   height:100%;
-  background:crimson;
+  background:linear-gradient(90deg,#22c55e,#4ade80);
   width:0%;
-  transition: width .4s ease-in-out;
+  transition:.35s;
+  box-shadow:0 0 20px #22c55e88;
 }
 
-/* ======================
-   CARD
-====================== */
-#cardContainer {
+/* COMBO */
+.combo{
+  font-size:.85rem;
+  letter-spacing:.5px;
+  font-weight:700;
+  opacity:.85;
+}
+
+/* =========================
+   CARD AREA
+========================= */
+#cardContainer{
+  padding:22px 14px 120px;
+}
+.card{
+  background:linear-gradient(180deg,#111827,#0b1220);
+  border-radius:22px;
+  padding:24px;
+  border:2px solid #1f2937;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+  animation:enter .35s ease;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  padding:24px 12px;
-}
-
-.card {
-  width:100%;
-  background:#111827;
-  border-radius:20px;
-  padding:22px;
-  margin-bottom:20px;
-  border:2px solid #374151;
-  box-shadow:0 12px 40px rgba(0,0,0,.5);
   text-align:center;
-  animation:slideIn 0.35s ease-out;
+}
+.card.boss{
+  border-color:#ef4444;
+  box-shadow:
+    0 0 40px #ef444466,
+    0 0 80px #ef444422 inset;
+  animation:bossPulse 1.6s infinite;
+}
+@keyframes bossPulse{
+  0%,100%{box-shadow:0 0 30px #ef444444}
+  50%{box-shadow:0 0 70px #ef444488}
+}
+@keyframes enter{
+  from{opacity:0;transform:translateY(24px)}
 }
 
-@keyframes slideIn {
-  0%{opacity:0; transform:translateY(20px)}
-  100%{opacity:1; transform:translateY(0)}
+/* =========================
+   CARD CONTENT
+========================= */
+.meta{
+  font-size:.75rem;
+  opacity:.6;
+  margin-bottom:6px;
+  letter-spacing:.5px;
 }
-
-.exercise {
+.exercise{
   font-size:1.6rem;
-  font-weight:900;
-  margin-bottom:12px;
-  animation:pulse 1.8s ease-in-out infinite;
+  font-weight:1000;
+  margin-bottom:10px;
 }
-
-@keyframes pulse {
-  0%,100%{transform:scale(1)}
-  50%{transform:scale(1.05)}
-}
-
-.muscle-icon {
-  width:140px;
-  margin:16px auto;
+.muscle-icon{
+  width:150px;
   display:block;
-  animation:heartbeat 1.5s ease-in-out infinite;
+  margin:16px auto;
+  filter:drop-shadow(0 0 24px #22c55e44);
+  animation:breath 2s infinite;
 }
-@keyframes heartbeat{
-  0%,28%,70%,100%{transform:scale(1)}
-  14%,42%{transform:scale(1.12)}
+@keyframes breath{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.1)}
 }
-
-.set-box {
-  font-weight:700;
+.set-box{
+  font-weight:900;
   margin:10px 0;
-  font-size:1.1rem;
 }
-
-.set-progress {
-  width:100%;
-  height:12px;
-  background:#1f2937;
-  border-radius:8px;
+/* progress */
+.set-progress{
+  height:14px;
+  background:#020617;
+  border-radius:10px;
   overflow:hidden;
+  border:1px solid #1f2937;
+  width:100%;
 }
-.set-progress-fill {
+.set-progress-fill{
   height:100%;
-  background:#22c55e;
-  width:0%;
-  transition: width .4s ease;
+  background:linear-gradient(90deg,#22c55e,#16a34a);
+  transition:.35s;
 }
-
-.info-grid {
+/* grid */
+.info-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:10px;
-  margin-top:16px;
+  margin-top:18px;
+  width:100%;
 }
 .badge{
   background:#020617;
@@ -135,80 +181,87 @@ body, html {
   padding:10px 6px;
   text-align:center;
 }
-.badge-label{
-  font-size:.7rem;
-  opacity:.6;
+.badge-label{font-size:.7rem;opacity:.6}
+.badge-value{font-weight:900}
+
+/* =========================
+   BUTTON
+========================= */
+button.primary{
+  background:linear-gradient(180deg,#22c55e,#16a34a);
+  border:none;
+  border-radius:999px;
+  padding:16px 22px;
+  font-weight:1000;
+  margin-top:22px;
+  cursor:pointer;
+  box-shadow:0 0 30px #22c55e66;
+  font-size:1rem;
+  letter-spacing:.5px;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
 }
-.badge-value{
-  font-size:1.05rem;
-  font-weight:800;
+button.primary:active{
+  transform:scale(.97);
 }
 
-/* ======================
-   ACHIEVEMENT POPUP
-====================== */
-.ach-popup{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.85);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-  animation:fadeIn .25s ease;
+/* =========================
+   PAUSE TIMER
+========================= */
+#pauseContainer {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  margin-top:30px;
 }
-.ach-popup.hidden{display:none;}
-.ach-box{
-  background:#111827;
-  border:2px solid #22c55e;
-  border-radius:22px;
-  padding:28px;
-  width:90%;
-  max-width:420px;
-  text-align:center;
-  box-shadow:0 0 50px rgba(34,197,94,.5);
-  animation:pop .35s ease;
+#pauseCircle {
+  width:180px;
+  height:180px;
+  margin-top:12px;
+  background:none;
+  animation:breath 2s infinite;
 }
-.ach-title{
-  font-size:1.5rem;
-  font-weight:900;
-  margin-bottom:16px;
-  color:#22c55e;
-}
-.ach-item{
-  background:#020617;
-  border:1px solid #1f2937;
-  border-radius:12px;
+#skipPauseBtn {
+  margin-top:24px;
   padding:12px;
-  margin-top:10px;
+  border:none;
+  border-radius:12px;
+  background:#787878;
   font-weight:700;
+  cursor:pointer;
 }
-@keyframes pop{
-  from{transform:scale(.8);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
-@keyframes fadeIn{
-  from{opacity:0}
-  to{opacity:1}
-}
+#skipPauseBtn:hover { background:#f1f1f1; }
+
 </style>
 </head>
 
 <body>
 
+<!-- =========================
+     OMEGA HUD BAR
+========================= -->
 <div class="hero-bar">
-  <div class="level" id="levelDisplay">Level 1</div>
-  <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+  <div class="hero-inner">
+    <div class="hud-row">
+      <div class="level" id="levelDisplay">Level 1</div>
+      <div class="session-xp" id="sessionXp">Session XP 0</div>
+    </div>
+    <div class="xp-bar">
+      <div class="xp-fill" id="xpFill"></div>
+    </div>
+    <div class="combo" id="comboLine">Combo x1</div>
+  </div>
 </div>
 
-<div id="cardContainer"></div>
+<div class="page">
+  <div id="cardContainer"></div>
 
-<!-- Achievement Popup -->
-<div id="achPopup" class="ach-popup hidden">
-  <div class="ach-box">
-    <div class="ach-title">🏆 Achievement freigeschaltet!</div>
-    <div id="achList"></div>
-    <button onclick="closeAchPopup()" class="primary">Nice!</button>
+  <!-- PAUSE TIMER -->
+  <div id="pauseContainer">
+    <h2>Pause</h2>
+    <canvas id="pauseCircle" width="180" height="180"></canvas>
+    <button id="skipPauseBtn">Pause überspringen</button>
   </div>
 </div>
 
@@ -219,129 +272,257 @@ loadLayout("../pages/cards.html","../pages/preview.html");
 
 <script>
 /* =========================
-   SESSION + DATA
+   SESSION LOAD
 ========================= */
-const PROGRESS_KEY="workoutProgress";
 let session = JSON.parse(localStorage.getItem("workoutSession"));
-if(!session||session.finished){ location.href="../index.html"; }
-if(!session.difficultyFactor) session.difficultyFactor=1.0;
+let week, day;
 
-const week=session.week;
-const day=session.day;
-document.title=`Iron Insanity — Woche ${week} • ${day}`;
+if(!session || session.finished){
+  location.href="../index.html";
+} else {
+  week = session.week;
+  day = session.day;
+}
 
-const ICONS={ Chest:"chest.svg", Back:"back.svg", Legs:"legs.svg", Shoulders:"shoulders.svg", Biceps:"biceps.svg", Triceps:"triceps.svg" };
-
-let exercises=[], exIndex=0, setIndex=0;
+/* =========================
+   STATE
+========================= */
+let exercises=[];
+let exIndex=0;
+let setIndex=0;
 let xpTotal=0;
+let combo=1;
+let pauseInterval = null;
+
+/* =========================
+   ICONS
+========================= */
+const ICONS={
+  Chest:"chest.svg",
+  Back:"back.svg",
+  Legs:"legs.svg",
+  Shoulders:"shoulders.svg",
+  Biceps:"biceps.svg",
+  Triceps:"triceps.svg"
+};
 
 /* =========================
    LOAD DATA
 ========================= */
-async function loadData(){
-  const res = await fetch("../data/data.json");
-  const data = await res.json();
-  exercises=data.weeks.find(w=>w.week===week)[day];
-  showCard();
+async function loadData() {
+  try {
+    const res = await fetch("../data/data.json");
+    if(!res.ok) throw new Error("JSON-Datei konnte nicht geladen werden");
+
+    const data = await res.json();
+
+    const weekData = data.weeks.find(w => w.week === Number(week));
+    if(!weekData) throw new Error(`Woche ${week} nicht gefunden`);
+
+    exercises = weekData[day]; // day = "Push" | "Pull" | "Legs"
+    if(!exercises) throw new Error(`Workout für Tag ${day} nicht gefunden`);
+
+    render();
+  } catch(e) {
+    console.error(e);
+    alert("Fehler beim Laden des Workouts: " + e.message);
+  }
 }
+
 loadData();
 
 /* =========================
-   SHOW CARD
+   RENDER
 ========================= */
-function showCard(){
-  const root=document.getElementById("cardContainer");
-  root.innerHTML="";
+function render(){
+  cardContainer.innerHTML="";
 
   if(exIndex>=exercises.length){
-    root.innerHTML=`
-      <div class="card">
-        <h2>🔥 Workout beendet!</h2>
-        <button class="primary" onclick="finish()">Beenden & XP speichern</button>
-      </div>`;
-    localStorage.removeItem(PROGRESS_KEY);
+    cardContainer.innerHTML=`
+    <div class="card boss">
+      <div class="exercise">☢️ OMEGA COMPLETE</div>
+      <button class="primary" onclick="finish()">XP speichern</button>
+    </div>`;
     return;
   }
 
   const ex=exercises[exIndex];
   const sets=Number(ex.sets)||1;
-  const pause=Number(ex.pause)||0;
+  const isBoss = exIndex===exercises.length-1;
 
   const card=document.createElement("div");
-  card.className="card";
+  card.className="card"+(isBoss?" boss":"");
 
-  card.innerHTML=`<div class="exercise">${ex.exercise}</div>`;
+  card.innerHTML=`
+    <div class="meta">Woche ${week} • ${day}</div>
+    <div class="exercise">${isBoss?"🔥 BOSS: ":""}${ex.exercise}</div>
+  `;
 
   const img=document.createElement("img");
   img.src="../icons/"+(ICONS[ex.muscle]||"default.svg");
   img.className="muscle-icon";
   card.appendChild(img);
 
-  card.innerHTML+=`<div class="set-box">Satz ${setIndex+1} / ${sets}</div>`;
-
-  const prog=document.createElement("div");
-  prog.className="set-progress";
-  prog.innerHTML=`<div class="set-progress-fill" style="width:${(setIndex/sets)*100}%"></div>`;
-  card.appendChild(prog);
+  card.innerHTML+=`
+    <div class="set-box">Satz ${setIndex+1}/${sets}</div>
+    <div class="set-progress">
+      <div class="set-progress-fill" style="width:${(setIndex/sets)*100}%"></div>
+    </div>
+  `;
 
   const grid=document.createElement("div");
   grid.className="info-grid";
   grid.innerHTML=`
     <div class="badge"><div class="badge-label">Wdh</div><div class="badge-value">${ex.repetitions}</div></div>
-    <div class="badge"><div class="badge-label">Gewicht</div><div class="badge-value">${ex.weight} kg</div></div>
-    <div class="badge"><div class="badge-label">Pause</div><div class="badge-value">${pause}s</div></div>
+    <div class="badge"><div class="badge-label">Gewicht</div><div class="badge-value">${ex.weight}</div></div>
+    <div class="badge"><div class="badge-label">Pause</div><div class="badge-value">${ex.pause}</div></div>
     <div class="badge"><div class="badge-label">XP</div><div class="badge-value">${ex.xp}</div></div>
   `;
   card.appendChild(grid);
 
   const btn=document.createElement("button");
   btn.className="primary";
-  btn.innerText="Satz erledigt 💪";
-  btn.onclick=()=>completeSet(sets,pause,ex.xp);
+  btn.innerText="SATZ ERLEDIGT";
+  btn.onclick=()=>completeSet(sets, ex.xp);
   card.appendChild(btn);
 
-  root.appendChild(card);
-  updateXpBar();
+  cardContainer.appendChild(card);
+  updateHud();
 }
 
 /* =========================
-   COMPLETE SET
+   COMPLETE SET + PAUSE
 ========================= */
-function completeSet(sets,pause,xp){
+function completeSet(sets,xp){
+  const multi = 1 + (combo-1)*0.15;
+  const gained = Math.round(xp*multi);
+
+  xpTotal += gained;
+  combo++;
+
   setIndex++;
-  xpTotal += xp;
-  if(setIndex>=sets){ exIndex++; setIndex=0; }
-  showCard();
+  const ex = exercises[exIndex];
+  const isLastSet = setIndex >= sets;
+
+  if(isLastSet){
+    exIndex++;
+    setIndex = 0;
+    if(exIndex < exercises.length && ex.pause > 0){
+      startPause(ex.pause, render);
+      return;
+    }
+  } else {
+    if(ex.pause > 0){
+      startPause(ex.pause, render);
+      return;
+    }
+  }
+
+  comboLine.innerText = "Combo x"+combo;
+  render();
+}
+
+function startPause(seconds, onDone){
+  cardContainer.style.display = "none";
+  const pauseContainer = document.getElementById("pauseContainer");
+  pauseContainer.style.display = "flex";
+
+  let r = seconds;
+  const ctx = document.getElementById("pauseCircle").getContext("2d");
+
+  drawPause(ctx, r, seconds);
+
+  pauseInterval = setInterval(()=>{
+    drawPause(ctx, r, seconds);
+    if(--r < 0){
+      clearInterval(pauseInterval);
+      pauseContainer.style.display = "none";
+      cardContainer.style.display = "block";
+      onDone && onDone();
+    }
+  }, 1000);
+
+  document.getElementById("skipPauseBtn").onclick = ()=>{
+    clearInterval(pauseInterval);
+    pauseContainer.style.display = "none";
+    cardContainer.style.display = "block";
+    onDone && onDone();
+  };
+}
+
+function drawPause(ctx, r, t){
+  const c = 90, rad = 80;
+  const p = (t - r) / t;
+
+  ctx.clearRect(0,0,180,180);
+
+  // Hintergrundkreis
+  ctx.beginPath();
+  ctx.arc(c,c,rad,0,2*Math.PI);
+  ctx.strokeStyle = "#1f2937";
+  ctx.lineWidth = 12;
+  ctx.stroke();
+
+  // Fortschrittskreis
+  ctx.beginPath();
+  ctx.arc(c,c,rad,-Math.PI/2,-Math.PI/2 + 2*Math.PI*p);
+  ctx.strokeStyle = "#22c55e";
+  ctx.lineWidth = 12;
+  ctx.stroke();
+
+  // Countdown Text
+  ctx.fillStyle = "white";
+  ctx.font = "36px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(Math.max(r,0), c, c);
 }
 
 /* =========================
-   XP BAR
+   HUD UPDATE
 ========================= */
-function updateXpBar(){
-  const level=Math.floor(xpTotal/500)+1;
-  const fill=Math.min((xpTotal%500)/500*100,100);
-  document.getElementById("levelDisplay").innerText="Level "+level;
-  document.getElementById("xpFill").style.width=fill+"%";
+function updateHud(){
+  const global=Number(localStorage.getItem("totalXp")||0)+xpTotal;
+  const level=Math.floor(global/500)+1;
+
+  levelDisplay.innerText="Level "+level;
+  sessionXp.innerText="Session XP "+xpTotal;
+
+  xpFill.style.width=(global%500)/5+"%";
+  comboLine.innerText="Combo x"+combo;
 }
 
 /* =========================
-   FINISH WORKOUT
+   FINISH
 ========================= */
 function finish(){
-  const hist = JSON.parse(localStorage.getItem("history")||"[]");
-  session.finished=true;
-  session.finishedAt=Date.now();
-  const totalDuration=session.finishedAt-session.startedAt;
+  let hist = JSON.parse(localStorage.getItem("history") || "[]");
 
-  const entry={ week:session.week, day:session.day, start:session.startedAt, end:session.finishedAt, duration:totalDuration, xp:xpTotal };
-  hist.push(entry);
-  localStorage.setItem("history",JSON.stringify(hist));
-  localStorage.setItem("workoutSession",JSON.stringify(session));
-  localStorage.setItem("totalXp",Number(localStorage.getItem("totalXp")||0)+xpTotal);
+  session.finished = true;
+  session.finishedAt = Date.now();
 
-  alert("🔥 Workout beendet! Gesamt-XP: "+xpTotal);
+  hist.push({
+    week: session.week,
+    day: session.day,
+    start: session.startedAt,
+    end: session.finishedAt,
+    duration: session.finishedAt - session.startedAt,
+    xp: xpTotal
+  });
+
+  localStorage.setItem("history", JSON.stringify(hist));
+  localStorage.setItem("lastDay", session.day);
+  localStorage.removeItem("workoutSession");
+
+  localStorage.setItem("totalXp",
+    Number(localStorage.getItem("totalXp") || 0) + xpTotal
+  );
+
+  alert("☢️ OMEGA SESSION COMPLETE — XP " + xpTotal);
+
   location.href="../index.html";
 }
+
 </script>
 </body>
 </html>

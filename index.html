@@ -2,19 +2,16 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Iron Insanity</title>
-<meta name="theme-color" content="#020617">
+<meta name="theme-color" content="#0f172a">
 <link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles/app.css">
 
 <style>
-html,body{
-  margin:0; padding:0; height:100%;
-  background:linear-gradient(135deg,#020617,#0f172a);
-  color:white; font-family:system-ui,Arial;
-  display:flex; flex-direction:column; align-items:center;
-}
+
 
 h1{
   margin-top:50px;
@@ -180,7 +177,7 @@ h1{
 ======================= */
 
 const order=["Push","Pull","Legs"];
-const week=parseInt(localStorage.getItem("selectedWeek"))||1;
+let week = parseInt(localStorage.getItem("selectedWeek")) || 1;
 const MIN_PAUSE_HOURS=24;
 
 /* =======================
@@ -196,16 +193,33 @@ const lastDay=localStorage.getItem("lastDay");
    RANK SYSTEM (8 RÄNGE)
 ======================= */
 
-const RANKS = [
-  { n: "Rekrut",      xp: 0 },
-  { n: "Krieger",     xp: 1200 },
-  { n: "Zerstörer",   xp: 3000 },
-  { n: "Titan",       xp: 6000 },
-  { n: "Warlord",     xp: 10000 },
-  { n: "Champion",    xp: 15000 },
-  { n: "Legende",     xp: 21000 },
-  { n: "Brutalizer",  xp: 28000 }
+const RANKS = [];
+const baseNames = [
+  "Rekrut", "Krieger", "Zerstörer", "Titan", "Warlord", "Champion",
+  "Legende", "Brutalizer", "Kriegsherr", "Eroberer", "Phönix", "Schattenlord",
+  "Apokalypt", "Unsterblicher", "Gottkrieger", "Mythos", "Kosmokrat", "Ewiger"
 ];
+
+const musclePrefixes = [
+  "Muskel", "Bizeps", "Protein", "Hantel", "Dominator", "Kraft", 
+  "Supersaurus", "Ripped", "Omega", "Alpha", "Mega", "Titan", "Colossus", 
+  "Maximus", "Ultra", "Giga", "Krieg", "Power", "Flex", "Brawn"
+];
+
+// Erst die Grundstufen
+for (let i = 0; i < baseNames.length; i++) {
+  RANKS.push({ n: baseNames[i], xp: i === 0 ? 0 : Math.floor(Math.pow(i, 2) * 1200) });
+}
+
+// Dann die ultra-muskeligen Ränge
+for (let i = 0; i < 82; i++) {
+  const prefix = musclePrefixes[i % musclePrefixes.length];
+  const suffix = ["Berserker","Panzer","Held","Koloss","Gott","Übermensch","Rampage","Titan"][i % 8];
+  const name = `${prefix}-${suffix}`;
+  const xp = Math.floor(Math.pow(baseNames.length + i, 2) * 1500); // Steil wachsend
+  RANKS.push({ n: name, xp });
+}
+
 
 function getRankData(xp){
   let current=RANKS[0];
@@ -272,11 +286,26 @@ xpProgressText.innerText=xpText;
 
 weekLabel.innerText=`Woche ${week}`;
 
-const weekEntries=history.filter(e=>e.week===week);
-const done=new Set(weekEntries.map(e=>e.day)).size;
+/* =======================
+   AUTOMATISCH WEEK WECHSELN
+======================= */
 
-weekProgressText.innerText=`${done}/3 Trainings erledigt`;
-weekProgressFill.style.width=(done/3*100)+"%";
+// history für aktuelle Woche filtern
+const weekEntries = history.filter(e => e.week === week);
+const done = new Set(weekEntries.map(e => e.day)).size;
+
+// wenn alle 3 Trainings erledigt sind
+if(done >= 3){
+  const nextWeek = week + 1;
+  week = nextWeek;
+  localStorage.setItem("selectedWeek", nextWeek);
+  weekLabel.innerText = `Woche ${week}`;
+  weekProgressText.innerText = `0/3 Trainings erledigt`;
+  weekProgressFill.style.width = "0%";
+  alert(`✅ Woche ${week - 1} abgeschlossen! Willkommen in Woche ${week}`);
+}
+
+
 
 /* =======================
    NEXT DAY
@@ -330,6 +359,7 @@ order.forEach(day=>{
 
  if(day===nextDay){
   if(cooldown<=0){
+   icon="✅"; txt="abgeschlossen"
    icon="🔥"; txt="bereitgestellt";
   } else {
    icon="⏳"; txt=hoursLeft(cooldown);
