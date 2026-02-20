@@ -233,6 +233,109 @@ button.primary:active{
 }
 #skipPauseBtn:hover { background:#f1f1f1; }
 
+
+/* =======================
+   IPHONE SE – GAME MODE
+======================= */
+@media (max-width: 380px) and (max-height: 700px) {
+
+  /* HUD kompakter */
+  .hero-inner{
+    padding:8px 12px;
+    gap:6px;
+  }
+
+  .level{
+    font-size:1rem;
+  }
+
+  .session-xp{
+    font-size:.75rem;
+  }
+
+  .xp-bar{
+    height:8px;
+  }
+
+  .combo{
+    font-size:.75rem;
+  }
+
+  /* CARD kleiner */
+  .card{
+    padding:14px;
+    border-radius:16px;
+  }
+
+  .exercise{
+    font-size:1.15rem;
+    margin-bottom:6px;
+  }
+
+  .meta{
+    font-size:.65rem;
+  }
+
+  /* 🔥 ICON kleiner */
+  .muscle-icon{
+    width:80px;   /* vorher 150px */
+    margin:8px auto;
+  }
+
+  /* Sets kompakter */
+  .set-box{
+    font-size:.85rem;
+    margin:6px 0;
+  }
+
+  .set-progress{
+    height:10px;
+  }
+
+  /* Grid kompakter */
+  .info-grid{
+    gap:6px;
+    margin-top:12px;
+  }
+
+  .badge{
+    padding:6px 4px;
+  }
+
+  .badge-label{
+    font-size:.6rem;
+  }
+
+  .badge-value{
+    font-size:.8rem;
+  }
+
+  /* Button kleiner */
+  button.primary{
+    padding:12px 16px;
+    font-size:.85rem;
+    margin-top:14px;
+  }
+
+  /* Pause kleiner */
+  #pauseCircle{
+    width:130px;
+    height:130px;
+  }
+
+  #skipPauseBtn{
+    padding:8px;
+    font-size:.75rem;
+  }
+}
+
+/* Glow Animation */
+@keyframes pulseGlow{
+  0%{box-shadow:0 0 0 rgba(34,197,94,0);}
+  50%{box-shadow:0 0 12px rgba(34,197,94,.6);}
+  100%{box-shadow:0 0 0 rgba(34,197,94,0);}
+}
+
 </style>
 </head>
 
@@ -271,18 +374,8 @@ loadLayout("../pages/cards.html","../pages/preview.html");
 </script>
 
 <script>
-/* =========================
-   SESSION LOAD
-========================= */
-let session = JSON.parse(localStorage.getItem("workoutSession"));
-let week, day;
 
-if(!session || session.finished){
-  location.href="../index.html";
-} else {
-  week = session.week;
-  day = session.day;
-}
+
 
 /* =========================
    STATE
@@ -293,6 +386,52 @@ let setIndex=0;
 let xpTotal=0;
 let combo=1;
 let pauseInterval = null;
+
+/* =========================
+   SESSION LOAD
+========================= */
+
+let session = JSON.parse(localStorage.getItem("workoutSession"));
+let week, day;
+
+if(!session || session.finished){
+  location.href="../index.html";
+} else {
+  week = session.week;
+  day = session.day;
+
+  // 🔥 Fortschritt wiederherstellen
+  exIndex = session.exIndex || 0;
+  setIndex = session.setIndex || 0;
+  xpTotal = session.xpTotal || 0;
+  combo = session.combo || 1;
+}
+
+/* =========================
+   SAVE SESSION
+========================= */
+function saveSession(){
+  if(!session) return;
+
+  session.exIndex = exIndex;
+  session.setIndex = setIndex;
+  session.xpTotal = xpTotal;
+  session.combo = combo;
+  session.lastSaved = Date.now();
+
+  localStorage.setItem("workoutSession", JSON.stringify(session));
+}
+
+// Speichern wenn Tab gewechselt oder App minimiert wird
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    saveSession();
+  }
+});
+
+window.addEventListener("beforeunload", saveSession);
+
+
 
 /* =========================
    ICONS
@@ -419,10 +558,14 @@ function completeSet(sets,xp){
   }
 
   comboLine.innerText = "Combo x"+combo;
+
+  saveSession();
+
   render();
 }
 
 function startPause(seconds, onDone){
+  saveSession();
   cardContainer.style.display = "none";
   const pauseContainer = document.getElementById("pauseContainer");
   pauseContainer.style.display = "flex";

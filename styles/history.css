@@ -1,0 +1,175 @@
+/* =====================
+   APP WRAP / BODY
+===================== */
+.app-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: white;
+  font-family: 'Segoe VI', system-ui, Arial, sans-serif;
+}
+
+/* =====================
+   HERO / HEADER
+===================== */
+.hero {
+  width: 100%;
+  padding: 32px 22px 20px;
+  border-bottom: 1px solid #1f2937;
+  text-align: center;
+}
+
+.hero-inner {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 2.3rem;
+  font-weight: 900;
+}
+
+.hero-sub {
+  margin-top: 6px;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* =====================
+   CONTENT
+===================== */
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px 14px 90px; /* Platz für Bottom Nav */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+/* =====================
+   CARDS (Summary, Achievements, History)
+===================== */
+.card {
+  background: #111827;
+  border: 2px solid #374151;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.entry-title {
+  font-weight: 900;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.badge {
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  border-radius: 14px;
+  padding: 10px;
+  text-align: center;
+}
+
+.badge-label {
+  font-size: 0.65rem;
+  opacity: 0.6;
+}
+
+.badge-value {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+/* =====================
+   ACHIEVEMENTS
+===================== */
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.ach {
+  background: #020617;
+  border: 2px solid #1f2937;
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.45;
+}
+
+.ach.unlocked {
+  border-color: #22c55e;
+  color: #22c55e;
+  opacity: 1;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+}
+
+/* =====================
+   HISTORY LIST
+===================== */
+#historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.history-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.history-card h3 {
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+.history-card p {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* =====================
+   HINT
+===================== */
+.hint {
+  opacity: 0.6;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 600px) {
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  .hero-sub {
+    font-size: 0.85rem;
+  }
+  .entry-title {
+    font-size: 1.1rem;
+  }
+  .row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

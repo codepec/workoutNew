@@ -7,148 +7,14 @@
 
 <link rel="manifest" href="../manifest.json">
 <meta name="theme-color" content="#00FF66">
+
 <link rel="stylesheet" href="../styles/app.css">
-
-<style>
-
-/* =========================
-   BASE
-========================= */
-html,body{
-  margin:0;
-  font-family:system-ui,Arial;
-  background:linear-gradient(135deg,#020617,#0f172a);
-  color:white;
-}
-
-/* =========================
-   HERO / HEADER
-========================= */
-.hero{
-  width:100%;
-  padding:32px 22px 20px;
-  border-bottom:1px solid #1f2937;
-}
-
-.hero-inner{
-  max-width:980px;
-  margin:0 auto;
-}
-
-.hero-title{
-  font-size:2.3rem;
-  font-weight:1000;
-}
-
-.hero-sub{
-  margin-top:6px;
-  color:#9ca3af;
-  font-size:.95rem;
-  font-weight:600;
-}
-
-/* =========================
-   CONTENT
-========================= */
-.content{
-  padding:20px;
-  max-width:980px;
-  margin:0 auto;
-  display:flex;
-  flex-direction:column;
-}
-
-/* =========================
-   CARD
-========================= */
-.card{
-  background:#111827;
-  border:2px solid #374151;
-  border-radius:20px;
-  padding:18px;
-  margin-bottom:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.5);
-  width:100%;
-  box-sizing:border-box;
-}
-
-.entry-title{
-  font-weight:900;
-  font-size:1.3rem; /* etwas größer */
-  margin-bottom:10px;
-}
-
-.row{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-top:10px;
-}
-
-.badge{
-  background:#020617;
-  border:1px solid #1f2937;
-  border-radius:14px;
-  padding:10px;
-  text-align:center;
-}
-
-.badge-label{
-  font-size:.65rem;
-  opacity:.6;
-}
-
-.badge-value{
-  font-size:.95rem;
-  font-weight:800;
-}
-
-/* =========================
-   ACHIEVEMENTS
-========================= */
-.ach-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-  gap:12px;
-  margin-top:12px;
-}
-
-.ach{
-  background:#020617;
-  border:2px solid #1f2937;
-  border-radius:14px;
-  padding:12px;
-  text-align:center;
-  font-size:.85rem;
-  opacity:.45;
-}
-
-.ach.unlocked{
-  border-color:#22c55e;
-  color:#22c55e;
-  opacity:1;
-  box-shadow:0 0 12px rgba(34,197,94,.5);
-}
-
-.hint{
-  opacity:.6;
-  text-align:center;
-  margin-top:10px;
-}
-
-@media screen {
-  .hero{
-  width: 85%;
-  };
-  .list{
-      width: 90%;
-  }
-}
-
-</style>
+<link rel="stylesheet" href="../styles/history.css">
 </head>
 
 <body>
+
+<div class="app-wrap">
 
 <!-- =========================
    HERO / HEADER
@@ -156,8 +22,8 @@ html,body{
 <div class="hero">
   <div class="hero-inner">
     <div class="hero-title">History</div>
-    <div class="hero-sub" id="heroSub1">Deine Trainingsstatistiken</div>
-    <div class="hero-sub" id="heroSub2">Workouts, XP & Achievements</div>
+    <div class="hero-sub">Deine Trainingsstatistiken</div>
+    <div class="hero-sub">Workouts, XP & Achievements</div>
   </div>
 </div>
 
@@ -168,7 +34,7 @@ html,body{
 
   <div id="summary" class="card"></div>
 
-  <div id="achievements" class="card">
+  <div class="card">
     <div class="entry-title">🏆 Achievements</div>
     <div class="ach-grid" id="achGrid"></div>
   </div>
@@ -176,7 +42,11 @@ html,body{
   <div id="historyList"></div>
 
   <div id="hint" class="hint"></div>
+
 </div>
+
+</div> <!-- app-wrap end -->
+
 
 <script>
 /* ======================
@@ -202,7 +72,7 @@ function calcXP(e){
   if(e.exercises){
     return e.exercises.reduce((s,ex,idx)=>{
       let key = `${idx}_0`;
-      const adjust = e.xpAdjustments?.[key]||0;
+      const adjust = e.xpAdjustments?.[key] || 0;
       return s + (ex.xp || 0) + adjust;
     },0);
   }
@@ -218,7 +88,11 @@ function calcLevel(xp){
 ====================== */
 function calcStreak(list){
   if(list.length===0) return 0;
-  const days = [...new Set(list.map(e=>new Date(e.start).toDateString()))].sort().reverse();
+
+  const days = [...new Set(
+    list.map(e=>new Date(e.start).toDateString())
+  )].sort().reverse();
+
   let s=1;
   for(let i=1;i<days.length;i++){
     const a=new Date(days[i-1]);
@@ -245,74 +119,121 @@ const ACH = [
    SUMMARY
 ====================== */
 function renderSummary(list){
- const xp = list.reduce((s,e)=>s+calcXP(e),0);
- const dur = list.reduce((s,e)=>s+e.duration,0);
- const level = calcLevel(xp);
- const streak = calcStreak(list);
- const stats = {xp,count:list.length,streak,totalMin:Math.round(dur/60000)};
- summary.innerHTML = `
-   <div class="entry-title">🔥 Progress</div>
-   <div class="row">
-     <div class="badge"><div class="badge-label">Workouts</div><div class="badge-value">${stats.count}</div></div>
-     <div class="badge"><div class="badge-label">Zeit</div><div class="badge-value">${stats.totalMin}m</div></div>
-     <div class="badge"><div class="badge-label">XP</div><div class="badge-value">${xp}</div></div>
-     <div class="badge"><div class="badge-label">Level</div><div class="badge-value">${level}</div></div>
-   </div>`;
- return stats;
+  const xp = list.reduce((s,e)=>s+calcXP(e),0);
+  const dur = list.reduce((s,e)=>s+(e.duration||0),0);
+  const level = calcLevel(xp);
+  const streak = calcStreak(list);
+
+  const stats = {
+    xp,
+    count:list.length,
+    streak,
+    totalMin:Math.round(dur/60000)
+  };
+
+  document.getElementById("summary").innerHTML = `
+    <div class="entry-title">🔥 Progress</div>
+    <div class="row">
+      <div class="badge">
+        <div class="badge-label">Workouts</div>
+        <div class="badge-value">${stats.count}</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">Zeit</div>
+        <div class="badge-value">${stats.totalMin}m</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">XP</div>
+        <div class="badge-value">${xp}</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">Level</div>
+        <div class="badge-value">${level}</div>
+      </div>
+    </div>`;
+
+  return stats;
 }
 
 /* ======================
    ACH RENDER
 ====================== */
 function renderAchievements(stats){
- achGrid.innerHTML="";
- ACH.forEach(a=>{
-   if(a.rule(stats)){
-     const el=document.createElement("div");
-     el.className="ach unlocked";
-     el.innerText=a.label;
-     achGrid.appendChild(el);
-   }
- });
- if(achGrid.children.length===0){
-   achGrid.innerHTML="<div class='hint'>Noch keine Achievements freigeschaltet</div>";
- }
+  const achGrid = document.getElementById("achGrid");
+  achGrid.innerHTML="";
+
+  ACH.forEach(a=>{
+    if(a.rule(stats)){
+      const el=document.createElement("div");
+      el.className="ach unlocked";
+      el.innerText=a.label;
+      achGrid.appendChild(el);
+    }
+  });
+
+  if(achGrid.children.length===0){
+    achGrid.innerHTML="<div class='hint'>Noch keine Achievements freigeschaltet</div>";
+  }
 }
 
 /* ======================
    ENTRY CARD
 ====================== */
 function renderEntry(e){
- const card=document.createElement("div");
- card.className="card";
- card.innerHTML=`
-   <div class="entry-title">
-     Woche ${e.week} — ${e.day}
-   </div>
-   <div class="row">
-     <div class="badge"><div class="badge-label">Start</div><div class="badge-value">${fmtDateBlock(e.start)}</div></div>
-     <div class="badge"><div class="badge-label">Ende</div><div class="badge-value">${fmtDateBlock(e.end)}</div></div>
-     <div class="badge"><div class="badge-label">Dauer</div><div class="badge-value">${fmtDuration(e.duration)}</div></div>
-     <div class="badge"><div class="badge-label">XP</div><div class="badge-value">${calcXP(e)}</div></div>
-   </div>`;
- return card;
+  const card=document.createElement("div");
+  card.className="card";
+
+  card.innerHTML=`
+    <div class="entry-title">
+      Woche ${e.week} — ${e.day}
+    </div>
+    <div class="row">
+      <div class="badge">
+        <div class="badge-label">Start</div>
+        <div class="badge-value">${fmtDateBlock(e.start)}</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">Ende</div>
+        <div class="badge-value">${fmtDateBlock(e.end)}</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">Dauer</div>
+        <div class="badge-value">${fmtDuration(e.duration||0)}</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">XP</div>
+        <div class="badge-value">${calcXP(e)}</div>
+      </div>
+    </div>`;
+
+  return card;
 }
 
 /* ======================
    LOAD
 ====================== */
 function load(){
- const list = JSON.parse(localStorage.getItem("history")||"[]");
- if(list.length===0){
-   hint.innerText="Noch keine Trainings abgeschlossen.";
-   return;
- }
- const stats = renderSummary(list);
- renderAchievements(stats);
- list.slice().reverse().forEach(e=>{
-   historyList.appendChild(renderEntry(e));
- });
+  const historyList = document.getElementById("historyList");
+  const hint = document.getElementById("hint");
+
+  historyList.innerHTML = "";
+  hint.innerText = "";
+
+  const list = JSON.parse(localStorage.getItem("history")||"[]");
+
+  if(list.length===0){
+    hint.innerText="Noch keine Trainings abgeschlossen.";
+    return;
+  }
+
+  const stats = renderSummary(list);
+  renderAchievements(stats);
+
+  list.slice().reverse().forEach(e=>{
+    historyList.appendChild(renderEntry(e));
+  });
 }
+
 load();
 </script>
 
