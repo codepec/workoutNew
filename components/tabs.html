@@ -15,9 +15,12 @@
 
 
 <script>
-// Set active tab based on current page
 document.querySelectorAll('.tab').forEach(tab => {
-  if(window.location.pathname.endsWith(tab.dataset.link.split('/').pop())){
+
+  const fileName = tab.dataset.link.split('/').pop();
+  const current = window.location.pathname.split('/').pop();
+
+  if(current === fileName){
     tab.classList.add('active');
   }
 
