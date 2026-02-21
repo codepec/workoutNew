@@ -3,14 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<base href="/workoutNew/">
+
 <title>Iron Insanity</title>
 <meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="/manifest.json">
-<link rel="icon" href="/favicon.ico">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-<link rel="stylesheet" href="./styles/app.css">
-<link rel="stylesheet" href="./styles/index.css">
-<base href="/workoutNew/">
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+<link rel="stylesheet" href="styles/app.css">
+<link rel="stylesheet" href="styles/index.css">
 
 </head>
 
@@ -20,14 +24,11 @@
 
   <div class="label-card" id="rankBox"></div>
   <div class="label-card exercise" id="missionBox"></div>
-  <!-- EINZIGE GRÜNE BOX FÜR XP + WOCHE -->
-  <div class="progress-week-box">
 
+  <div class="progress-week-box">
     <div class="progress-details">
 
       <div class="progress-item">
-
-
         <div id="xpProgressText"></div>
         <div class="progress-bar">
           <div class="progress-fill" id="xpProgressFill"></div>
@@ -35,7 +36,6 @@
       </div>
 
       <div class="progress-item">
-
         <div id="weekProgressText"></div>
         <div class="progress-bar">
           <div class="progress-fill" id="weekProgressFill"></div>
@@ -45,27 +45,24 @@
     </div>
   </div>
 
-
-
   <div id="trainGrid" class="train-grid"></div>
 
   <button class="start-btn" id="startBtn"></button>
-
   <button class="secondary-btn" onclick="changeWeek()">Woche wechseln</button>
 
 </div>
 
-<script type="module">
-  import { loadLayout } from './components/layoutMain.js';
-  loadLayout(window.location.pathname); // activePath automatisch setzen
-</script>
-<script src="./components/layoutMain.js" type="module"></script>
-<script>
 
-  
+<!-- LAYOUT LADEN -->
+<script type="module">
+  import { loadLayout } from 'components/layoutMain.js';
+  loadLayout(window.location.pathname);
+</script>
+
+
+<script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ===== ELEMENTE =====
   const rankBox = document.getElementById("rankBox");
   const xpProgressFill = document.getElementById("xpProgressFill");
   const xpProgressText = document.getElementById("xpProgressText");
@@ -75,102 +72,165 @@ document.addEventListener("DOMContentLoaded", () => {
   const trainGrid = document.getElementById("trainGrid");
   const startBtn = document.getElementById("startBtn");
 
-  // ===== CONFIG =====
   const order = ["Push","Pull","Legs"];
   let week = parseInt(localStorage.getItem("selectedWeek")) || 1;
   const MIN_PAUSE_HOURS = 24;
 
-  // ===== DATA =====
   const history = JSON.parse(localStorage.getItem("history")||"[]");
   const totalXp = Number(localStorage.getItem("totalXp")||0);
   const session = JSON.parse(localStorage.getItem("workoutSession")||"null");
   const lastDay = localStorage.getItem("lastDay");
 
-  // ===== RANK SYSTEM =====
   const RANKS = [];
   const baseNames = [
-    "Rekrut", "Krieger", "Zerstörer", "Titan", "Warlord", "Champion",
-    "Legende", "Brutalizer", "Kriegsherr", "Eroberer", "Phönix", "Schattenlord",
-    "Apokalypt", "Unsterblicher", "Gottkrieger", "Mythos", "Kosmokrat", "Ewiger"
+    "Rekrut","Krieger","Zerstörer","Titan","Warlord","Champion",
+    "Legende","Brutalizer","Kriegsherr","Eroberer","Phönix",
+    "Schattenlord","Apokalypt","Unsterblicher","Gottkrieger",
+    "Mythos","Kosmokrat","Ewiger"
   ];
-  const musclePrefixes = [
-    "Muskel", "Bizeps", "Protein", "Hantel", "Dominator", "Kraft", 
-    "Supersaurus", "Ripped", "Omega", "Alpha", "Mega", "Titan", "Colossus", 
-    "Maximus", "Ultra", "Giga", "Krieg", "Power", "Flex", "Brawn"
-  ];
-  for (let i=0;i<baseNames.length;i++){RANKS.push({n:baseNames[i],xp:i===0?0:Math.floor(Math.pow(i,2)*1200)});}
-  for (let i=0;i<82;i++){
-    const prefix=musclePrefixes[i%musclePrefixes.length];
-    const suffix=["Berserker","Panzer","Held","Koloss","Gott","Übermensch","Rampage","Titan"][i%8];
-    const name=`${prefix}-${suffix}`;
-    const xp=Math.floor(Math.pow(baseNames.length+i,2)*1500);
-    RANKS.push({n:name,xp});
-  }
-  function getRankData(xp){let current=RANKS[0];let next=null;for(let i=0;i<RANKS.length;i++){if(xp>=RANKS[i].xp){current=RANKS[i];next=RANKS[i+1]||null;}}return {current,next};}
-  function weekMult(w){if(w>=7)return 1.6;if(w>=5)return 1.4;if(w>=3)return 1.2;return 1.0;}
-  const MISSIONS={Push:"🎯 Brust & Trizeps sprengen",Pull:"🎯 Rücken & Bizeps zerstören",Legs:"🎯 Unterkörper Kriegstag"};
 
-  // ===== RANK BOX + XP =====
+  for (let i=0;i<baseNames.length;i++){
+    RANKS.push({n:baseNames[i],xp:i===0?0:Math.floor(Math.pow(i,2)*1200)});
+  }
+
+  function getRankData(xp){
+    let current=RANKS[0];
+    let next=null;
+    for(let i=0;i<RANKS.length;i++){
+      if(xp>=RANKS[i].xp){
+        current=RANKS[i];
+        next=RANKS[i+1]||null;
+      }
+    }
+    return {current,next};
+  }
+
+  function weekMult(w){
+    if(w>=7)return 1.6;
+    if(w>=5)return 1.4;
+    if(w>=3)return 1.2;
+    return 1.0;
+  }
+
+  const MISSIONS={
+    Push:"🎯 Brust & Trizeps sprengen",
+    Pull:"🎯 Rücken & Bizeps zerstören",
+    Legs:"🎯 Unterkörper Kriegstag"
+  };
+
   const rankData=getRankData(totalXp);
-  rankBox.innerHTML=`🎖 Rang: ${rankData.current.n}<div class="small">XP ${totalXp} • Wochenbonus x${weekMult(week)}</div>`;
-  let xpPct=100,xpText="Max Rang erreicht";
+
+  rankBox.innerHTML=
+    `🎖 Rang: ${rankData.current.n}
+     <div class="small">XP ${totalXp} • Wochenbonus x${weekMult(week)}</div>`;
+
+  let xpPct=100;
+  let xpText="Max Rang erreicht";
+
   if(rankData.next){
     const span=rankData.next.xp-rankData.current.xp;
     const gained=totalXp-rankData.current.xp;
     xpPct=Math.min(100,(gained/span)*100);
     xpText=`${totalXp} / ${rankData.next.xp} XP → ${rankData.next.n}`;
   }
+
   xpProgressFill.style.width=xpPct+"%";
   xpProgressText.innerText=xpText;
 
-  // ===== WEEK PROGRESS =====
   weekProgressText.innerText=`Woche ${week}`;
-  weekProgressFill.style.width=`${Math.min(100,(history.filter(e=>e.week===week).length/3)*100)}%`;
+  weekProgressFill.style.width=
+    `${Math.min(100,(history.filter(e=>e.week===week).length/3)*100)}%`;
 
-  // ===== AUTOMATISCH WEEK WECHSELN =====
   const weekEntries = history.filter(e => e.week===week);
   const done = new Set(weekEntries.map(e=>e.day)).size;
+
   if(done>=3){
-    week++; localStorage.setItem("selectedWeek",week);
+    week++;
+    localStorage.setItem("selectedWeek",week);
     weekProgressText.innerText=`Woche ${week}`;
     weekProgressFill.style.width="0%";
     alert(`✅ Woche ${week-1} abgeschlossen! Willkommen in Woche ${week}`);
   }
 
-  // ===== NEXT DAY =====
-  function nextFrom(last){if(!last)return "Push";return order[(order.indexOf(last)+1)%3];}
+  function nextFrom(last){
+    if(!last)return "Push";
+    return order[(order.indexOf(last)+1)%3];
+  }
+
   const nextDay=nextFrom(lastDay);
 
-  // ===== COOLDOWN =====
   let cooldown=0;
   const lastEntry=history.at(-1);
-  if(lastEntry){cooldown=lastEntry.end+MIN_PAUSE_HOURS*3600000-Date.now();}
-  function hoursLeft(ms){const h=Math.floor(ms/3600000);const m=Math.floor((ms%3600000)/60000);return h+"h "+m+"m";}
 
-  // ===== MISSION BOX =====
+  if(lastEntry){
+    cooldown=lastEntry.end+MIN_PAUSE_HOURS*3600000-Date.now();
+  }
+
+  function hoursLeft(ms){
+    const h=Math.floor(ms/3600000);
+    const m=Math.floor((ms%3600000)/60000);
+    return h+"h "+m+"m";
+  }
+
   missionBox.innerText=MISSIONS[nextDay];
 
-  // ===== TRAIN GRID =====
   trainGrid.innerHTML="";
+
   order.forEach(day=>{
     let icon="🔒",txt="gesperrt";
-    if(day===lastDay){icon="✅";txt="abgeschlossen";}
-    if(day===nextDay){if(cooldown<=0){icon="🔥";txt="bereitgestellt";}else{icon="⏳";txt=hoursLeft(cooldown);}}
-    trainGrid.innerHTML+=`<div class="train-row"><div>${day}</div><div>${icon} ${txt}</div></div>`;
-  });
-  if(done===3){trainGrid.innerHTML+=`<div class="train-row"><div>Boss Workout</div><div>🔥 freigeschaltet</div></div>`;}
 
-  // ===== START BUTTON =====
-  if(session && session.finished===false){startBtn.innerText="Training fortsetzen";startBtn.onclick=()=>location.href="./pages/cards.html";}
-  else if(cooldown>0){startBtn.innerText="⏳ Regeneration "+hoursLeft(cooldown);startBtn.classList.add("locked");startBtn.disabled=true;}
-  else{startBtn.innerText="🚀 Mission starten";startBtn.onclick=()=>{localStorage.setItem("workoutSession",JSON.stringify({week,day:nextDay,startedAt:Date.now(),finished:false,difficultyFactor:1}));location.href="./pages/cards.html";};}
+    if(day===lastDay){
+      icon="✅";
+      txt="abgeschlossen";
+    }
+
+    if(day===nextDay){
+      if(cooldown<=0){
+        icon="🔥";
+        txt="bereitgestellt";
+      }else{
+        icon="⏳";
+        txt=hoursLeft(cooldown);
+      }
+    }
+
+    trainGrid.innerHTML+=
+      `<div class="train-row">
+         <div>${day}</div>
+         <div>${icon} ${txt}</div>
+       </div>`;
+  });
+
+  if(session && session.finished===false){
+    startBtn.innerText="Training fortsetzen";
+    startBtn.onclick=()=>location.href="pages/cards.html";
+  }
+  else if(cooldown>0){
+    startBtn.innerText="⏳ Regeneration "+hoursLeft(cooldown);
+    startBtn.classList.add("locked");
+    startBtn.disabled=true;
+  }
+  else{
+    startBtn.innerText="🚀 Mission starten";
+    startBtn.onclick=()=>{
+      localStorage.setItem("workoutSession",
+        JSON.stringify({
+          week,
+          day:nextDay,
+          startedAt:Date.now(),
+          finished:false,
+          difficultyFactor:1
+        })
+      );
+      location.href="pages/cards.html";
+    };
+  }
 
 });
 
-// ===== NAV =====
-function goToPreview(){location.href="./pages/preview.html";}
-function goToHistory(){location.href="./pages/history.html";}
-function changeWeek(){location.href="./pages/week.html";}
+function changeWeek(){
+  location.href="pages/week.html";
+}
 </script>
 
 </body>
