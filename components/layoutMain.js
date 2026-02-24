@@ -21,7 +21,7 @@ export async function loadLayout(activePath, backLink=null){
   }
 
   // TABS
-  const t = await fetch("./components/tabs.html");
+  const t = await fetch("./components/tabsMain.html");
   document.body.insertAdjacentHTML("beforeend", await t.text());
 
   document.querySelectorAll(".tab").forEach(tab=>{
