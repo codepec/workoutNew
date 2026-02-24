@@ -93,6 +93,10 @@ body{
 </div>
 
 <script>
+
+const savedTheme = localStorage.getItem("theme") || "neon";
+document.documentElement.setAttribute("data-theme", savedTheme);
+
 /* =========================
    CREATE WEEK BUTTONS
 ========================= */
@@ -122,9 +126,10 @@ for(let i=1;i<=8;i++){
 </script>
 
 
-<script src="../components/layout.js"></script>
-<script>
-loadLayout("../pages/preview.html", "../index.html");
+<script type="module">
+import { loadLayout } from "../components/layout.js";
+
+loadLayout("week", "../index.html");
 </script>
 
 </body>

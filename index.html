@@ -61,6 +61,10 @@
 
 
 <script>
+
+const savedTheme = localStorage.getItem("theme") || "neon";
+document.documentElement.setAttribute("data-theme", savedTheme);
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const rankBox = document.getElementById("rankBox");

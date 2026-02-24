@@ -49,6 +49,10 @@
 
 
 <script>
+
+const savedTheme = localStorage.getItem("theme") || "neon";
+document.documentElement.setAttribute("data-theme", savedTheme);
+
 /* ======================
    FORMAT HELPERS
 ====================== */
@@ -237,9 +241,10 @@ function load(){
 load();
 </script>
 
-<script src="../components/layout.js"></script>
-<script>
-loadLayout("../pages/history.html","../index.html");
+<script type="module">
+import { loadLayout } from "../components/layout.js";
+
+loadLayout("history", "../index.html");
 </script>
 
 </body>

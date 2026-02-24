@@ -1,36 +1,62 @@
-async function loadLayout(activePath, backLink=null){
+// layout.js
+export async function loadLayout(activeRoute = null, backLink = null){
 
-  /* HEADER */
+  /* =========================
+     HEADER
+  ======================== */
   const h = await fetch("../components/header.html");
   document.body.insertAdjacentHTML("afterbegin", await h.text());
 
   if(backLink){
-    document.getElementById("backBtn").onclick = ()=> location.href = backLink;
-  }else{
-    document.getElementById("backBtn").style.visibility="hidden";
+    const backBtn = document.getElementById("backBtn");
+    if(backBtn) backBtn.onclick = ()=> location.href = backLink;
+  } else {
+    const backBtn = document.getElementById("backBtn");
+    if(backBtn) backBtn.style.visibility="hidden";
   }
 
-  /* TABS */
+  /* =========================
+     TABS
+  ======================== */
   const t = await fetch("../components/tabs.html");
   document.body.insertAdjacentHTML("beforeend", await t.text());
 
+  const routeMap = {
+    cards: "../pages/cards.html",
+    preview: "../pages/preview.html",
+    history: "../pages/history.html",
+    settings: "../pages/settings.html"
+  };
+
+  const currentPath = activeRoute || window.location.pathname;
+  const currentFile = currentPath.split('/').pop().replace(".html","");
+
   document.querySelectorAll(".tab").forEach(tab=>{
-    if(tab.dataset.link === activePath){
+    const route = tab.dataset.route;
+
+    // active markieren
+    if(route === currentFile){
       tab.classList.add("active");
     }
-    tab.onclick = ()=> location.href = tab.dataset.link;
+
+    // navigation
+    tab.onclick = () => {
+      window.location.href = routeMap[route];
+    };
   });
 
-
-  /* FOOTER */
+  /* =========================
+     FOOTER
+  ======================== */
   const f = await fetch("../components/footer.html");
   document.body.insertAdjacentHTML("beforeend", await f.text());
+
   console.log("Layout loaded");
-
-
 }
 
-
-function goHome(){
+/* =========================
+   QUICK HOME
+========================= */
+window.goHome = function() {
   window.location.href = "../index.html";
 }

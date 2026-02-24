@@ -9,65 +9,41 @@
 
 <link rel="apple-touch-icon" href="../icons/icon-192x192.png">
 <link rel="icon" href="../favicon.ico" type="image/png">
-
 <link rel="stylesheet" href="../styles/app.css">
 
 <style>
-h1{
-  margin:0;
-  font-size:1.4rem;
-}
-
-/* CONTENT */
-.content{
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
-  margin-top:20px;
-  width: 80%;
-}
-
-/* CARD */
-.card{
-  background:#111827;
-  border:2px solid #374151;
-
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.5);
-  
-}
-
-/* SETTING ROW */
-.setting{
+/* =========================
+   SETTING ROW
+========================= */
+.setting {
   display:flex;
   justify-content:space-between;
   align-items:center;
   padding:14px 0;
-  border-bottom:1px solid #1f2937;
+  border-bottom:1px solid var(--border);
 }
 
-.setting:last-child{
+.setting:last-child {
   border-bottom:none;
 }
 
-.setting-label{
+.setting-label {
   font-weight:600;
   opacity:.95;
 }
 
 /* SWITCH */
-.switch{
+.switch {
   position:relative;
   width:52px;
   height:28px;
 }
 
-.switch input{
+.switch input {
   display:none;
 }
 
-.slider{
+.slider {
   position:absolute;
   inset:0;
   background:#374151;
@@ -76,7 +52,7 @@ h1{
   transition:.25s;
 }
 
-.slider:before{
+.slider:before {
   content:"";
   position:absolute;
   height:22px;
@@ -88,16 +64,16 @@ h1{
   transition:.25s;
 }
 
-input:checked + .slider{
-  background:#22c55e;
+input:checked + .slider {
+  background:var(--accent);
 }
 
-input:checked + .slider:before{
+input:checked + .slider:before {
   transform:translateX(24px);
 }
 
-/* ACTION BUTTONS */
-.action-btn{
+/* BUTTONS */
+.action-btn {
   width:100%;
   margin-top:14px;
   padding:14px;
@@ -109,11 +85,11 @@ input:checked + .slider:before{
   color:white;
 }
 
-.action-btn.danger{
+.action-btn.danger {
   background:#7f1d1d;
 }
 
-.action-btn:hover{
+.action-btn:hover {
   transform:translateY(-2px);
 }
 </style>
@@ -121,93 +97,203 @@ input:checked + .slider:before{
 
 <body>
 
+<script>
+/* =========================
+   LOAD THEME EARLY
+========================= */
+const savedTheme = localStorage.getItem("theme") || "neon";
+document.documentElement.setAttribute("data-theme", savedTheme);
+</script>
+
 <div class="app-wrap">
 
-<div class="content">
+  <!-- =========================
+       HERO
+  ========================= -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-title">Einstellungen</div>
+      <div class="hero-sub">System & Gameplay</div>
+    </div>
+  </div>
 
-  <div class="sub">Einstellungen</div>
+  <div class="content">
 
-  <div class="card">
+    <!-- =========================
+         TOGGLES
+    ========================= -->
+    <div class="card">
 
-    <!-- SOUND -->
-    <div class="setting">
-      <div class="setting-label">Soundeffekte</div>
-      <label class="switch">
-        <input type="checkbox" id="soundToggle">
-        <span class="slider"></span>
-      </label>
+      <div class="setting">
+        <div class="setting-label">Soundeffekte</div>
+        <label class="switch">
+          <input type="checkbox" id="soundToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting">
+        <div class="setting-label">Vibration</div>
+        <label class="switch">
+          <input type="checkbox" id="vibrationToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting">
+        <div class="setting-label">Auto-Save</div>
+        <label class="switch">
+          <input type="checkbox" id="autosaveToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting">
+        <div class="setting-label">Pause überspringbar</div>
+        <label class="switch">
+          <input type="checkbox" id="pauseSkipToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting">
+        <div class="setting-label">Combo Anzeige</div>
+        <label class="switch">
+          <input type="checkbox" id="comboToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting">
+        <div class="setting-label">Große Muskel-Icons</div>
+        <label class="switch">
+          <input type="checkbox" id="bigIconsToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
     </div>
 
-    <!-- VIBRATION -->
-    <div class="setting">
-      <div class="setting-label">Vibration</div>
-      <label class="switch">
-        <input type="checkbox" id="vibrationToggle">
-        <span class="slider"></span>
-      </label>
+    <!-- =========================
+         THEME SELECTION
+    ========================= -->
+    <div class="card" style="margin-top:16px;">
+      <div class="setting">
+        <div class="setting-label">Theme</div>
+      </div>
+
+      <select id="themeSelect" class="action-btn">
+        <option value="neon">Neon Green</option>
+        <option value="crimson">Crimson Rage</option>
+        <option value="ocean">Ocean Blue</option>
+        <option value="gold">Golden Titan</option>
+        <option value="void">Void Purple</option>
+      </select>
+    </div>
+
+    <!-- =========================
+         RESET
+    ========================= -->
+    <div class="card" style="margin-top:16px;">
+
+      <button class="action-btn" onclick="resetHistory()">
+        Nur Trainingshistorie löschen
+      </button>
+
+      <button class="action-btn danger" onclick="resetAll()">
+        Alles zurücksetzen
+      </button>
+
     </div>
 
   </div>
 
-<div class="card" style="margin-top:16px;">
-  <button class="action-btn danger" onclick="resetAll()">
-    Alles zurücksetzen
-  </button>
-</div>
-
-
-</div>
-
 </div>
 
 <script>
 /* =========================
-   LOAD SETTINGS
+   SETTINGS LOGIC
 ========================= */
+
+function getSetting(key, def="on"){
+  return localStorage.getItem(key) ?? def;
+}
+
 const soundToggle = document.getElementById("soundToggle");
 const vibrationToggle = document.getElementById("vibrationToggle");
+const autosaveToggle = document.getElementById("autosaveToggle");
+const pauseSkipToggle = document.getElementById("pauseSkipToggle");
+const comboToggle = document.getElementById("comboToggle");
+const bigIconsToggle = document.getElementById("bigIconsToggle");
+const themeSelect = document.getElementById("themeSelect");
 
-soundToggle.checked = localStorage.getItem("sound") !== "off";
-vibrationToggle.checked = localStorage.getItem("vibration") !== "off";
+/* Load saved settings */
+soundToggle.checked = getSetting("sound") === "on";
+vibrationToggle.checked = getSetting("vibration") === "on";
+autosaveToggle.checked = getSetting("autosave") === "on";
+pauseSkipToggle.checked = getSetting("pauseSkip") === "on";
+comboToggle.checked = getSetting("comboVisible") === "on";
+bigIconsToggle.checked = getSetting("bigIcons") === "on";
 
-/* =========================
-   SAVE SETTINGS
-========================= */
-soundToggle.onchange = () => {
+themeSelect.value = savedTheme;
+
+/* Save on change */
+soundToggle.onchange = () =>
   localStorage.setItem("sound", soundToggle.checked ? "on" : "off");
-};
 
-vibrationToggle.onchange = () => {
+vibrationToggle.onchange = () =>
   localStorage.setItem("vibration", vibrationToggle.checked ? "on" : "off");
+
+autosaveToggle.onchange = () =>
+  localStorage.setItem("autosave", autosaveToggle.checked ? "on" : "off");
+
+pauseSkipToggle.onchange = () =>
+  localStorage.setItem("pauseSkip", pauseSkipToggle.checked ? "on" : "off");
+
+comboToggle.onchange = () =>
+  localStorage.setItem("comboVisible", comboToggle.checked ? "on" : "off");
+
+bigIconsToggle.onchange = () =>
+  localStorage.setItem("bigIcons", bigIconsToggle.checked ? "on" : "off");
+
+themeSelect.onchange = () => {
+  const theme = themeSelect.value;
+  localStorage.setItem("theme", theme);
+  document.documentElement.setAttribute("data-theme", theme);
 };
-</script>
 
-
-<script>
 /* =========================
-   RESET ACTION
+   RESET FUNCTIONS
 ========================= */
 
-/** Alles zurücksetzen */
+function resetHistory(){
+  if(!confirm("Nur Trainingshistorie löschen? XP bleibt erhalten.")) return;
+  localStorage.removeItem("history");
+  localStorage.removeItem("lastDay");
+  alert("Trainingshistorie gelöscht.");
+}
+
 function resetAll(){
-  if(!confirm("Willst du wirklich alles zurücksetzen? History, Fortschritt und XP werden gelöscht.")) return;
+  if(!confirm("Willst du wirklich ALLES zurücksetzen?")) return;
 
-  localStorage.removeItem("history");        // Trainingshistorie löschen
-  localStorage.removeItem("lastDay");        // zuletzt gespielter Tag löschen
-  localStorage.removeItem("totalXp");        // gesamte XP löschen
-  localStorage.removeItem("workoutSession"); // aktuelle Session löschen
-
-  // Startpunkt auf Woche 1 / Tag Push setzen
+  localStorage.clear();
   localStorage.setItem("selectedWeek", 1);
   localStorage.setItem("selectedDay", "Push");
+  localStorage.setItem("theme","neon");
 
-  alert("Alles zurückgesetzt! Du startest wieder bei Woche 1 / Push.");
+  alert("Alles zurückgesetzt.");
+  location.reload();
 }
 </script>
 
-<script src="../components/layout.js"></script>
-<script>
-loadLayout("../pages/settings.html","../index.html");
+<!-- =========================
+     LAYOUT (HEADER + TABS + FOOTER)
+========================= -->
+<script type="module">
+import { loadLayout } from "../components/layout.js";
+
+// activeRoute = "settings", backLink optional
+loadLayout("settings","../index.html");
 </script>
 
 </body>

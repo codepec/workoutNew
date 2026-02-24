@@ -187,27 +187,6 @@ html,body{
 .badge-label{font-size:.7rem;opacity:.6}
 .badge-value{font-weight:900}
 
-/* =========================
-   BUTTON
-========================= */
-button.primary{
-  background:linear-gradient(180deg,#22c55e,#16a34a);
-  border:none;
-  border-radius:999px;
-  padding:16px 22px;
-  font-weight:1000;
-  margin-top:22px;
-  cursor:pointer;
-  box-shadow:0 0 30px #22c55e66;
-  font-size:1rem;
-  letter-spacing:.5px;
-  display:block;
-  margin-left:auto;
-  margin-right:auto;
-}
-button.primary:active{
-  transform:scale(.97);
-}
 
 /* =========================
    PAUSE TIMER
@@ -376,14 +355,16 @@ button.primary:active{
 </div>
 
 
-<script src="../components/layout.js"></script>
-<script>
-loadLayout("../pages/cards.html","../pages/preview.html");
+<script type="module">
+import { loadLayout } from "../components/layout.js";
+
+loadLayout("cards", "../index.html");
 </script>
 
 <script>
 
-
+const savedTheme = localStorage.getItem("theme") || "neon";
+document.documentElement.setAttribute("data-theme", savedTheme);
 
 /* =========================
    STATE
